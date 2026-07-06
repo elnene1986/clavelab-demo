@@ -2,654 +2,206 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>El Plano — Aprende a leer planos</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Plano — Resumen del proyecto</title>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --blue-deep:#16386F;      /* blueprint field */
-    --blue-line:#DDE9FB;      /* drawing linework on blue */
-    --blue-dim:#8FB2E8;       /* secondary linework */
-    --paper:#F2F5F9;          /* drafting paper */
-    --ink:#14202E;
-    --ink-soft:#54627A;
-    --orange:#FF6B1A;         /* hi-vis accent */
-    --orange-dark:#D9530A;
-    --green:#1C9E5A;
-    --red:#D6402E;
-    --card:#FFFFFF;
-    --line:#D7DFEA;
-    --radius:14px;
+    --blue:#16386F; --blue-line:#DDE9FB; --blue-dim:#8FB2E8;
+    --paper:#F2F5F9; --ink:#14202E; --ink-soft:#54627A;
+    --orange:#FF6B1A; --orange-dark:#D9530A;
+    --card:#fff; --line:#D7DFEA; --green:#1C9E5A; --red:#C43A29;
   }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%}
+  *{box-sizing:border-box;margin:0;padding:0}
   body{
-    font-family:'IBM Plex Sans',sans-serif;
-    background:#233247;
-    color:var(--ink);
-    display:flex;align-items:center;justify-content:center;
-    min-height:100vh;padding:18px 0;
-  }
-  /* phone shell */
-  .phone{
-    width:100%;max-width:400px;height:min(820px,calc(100vh - 36px));
-    background:var(--paper);border-radius:34px;overflow:hidden;
-    box-shadow:0 30px 80px rgba(0,0,0,.45), 0 0 0 10px #0E1826, 0 0 0 12px #31435C;
-    display:flex;flex-direction:column;position:relative;
-  }
-  @media (max-width:440px){
-    body{padding:0;background:var(--paper)}
-    .phone{max-width:none;height:100vh;height:100dvh;border-radius:0;box-shadow:none}
-  }
-  /* drafting-paper grid on app background */
-  .phone::before{
-    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    font-family:'IBM Plex Sans',sans-serif;color:var(--ink);background:var(--paper);
+    line-height:1.55;font-size:15.5px;
     background-image:
-      linear-gradient(to right, rgba(22,56,111,.045) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(22,56,111,.045) 1px, transparent 1px);
-    background-size:22px 22px;
+      linear-gradient(to right, rgba(22,56,111,.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(22,56,111,.04) 1px, transparent 1px);
+    background-size:24px 24px;
   }
+  .wrap{max-width:680px;margin:0 auto;padding:28px 20px 60px}
 
-  /* header */
-  header{
-    position:relative;z-index:2;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:20px 20px 12px;
-  }
-  .logo{display:flex;align-items:center;gap:10px}
-  .logo-mark{
-    width:38px;height:38px;border-radius:9px;background:var(--blue-deep);
-    display:grid;place-items:center;flex:none;
-  }
-  .logo-mark svg{display:block}
-  .logo-type{font-family:'Big Shoulders Display';font-weight:800;font-size:24px;letter-spacing:.04em;line-height:1;color:var(--blue-deep)}
-  .logo-sub{font-size:10.5px;color:var(--ink-soft);letter-spacing:.02em;margin-top:2px}
-  .lang{
-    font-family:'IBM Plex Mono';font-size:12px;font-weight:500;
-    border:1.5px solid var(--blue-deep);border-radius:999px;background:var(--card);
-    color:var(--blue-deep);padding:6px 12px;cursor:pointer;
-  }
-  .lang:focus-visible,button:focus-visible,.module:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
-
-  main{position:relative;z-index:1;flex:1;overflow-y:auto;padding:6px 20px 28px;scrollbar-width:none}
-  main::-webkit-scrollbar{display:none}
-  .screen{display:none;animation:fade .25s ease}
-  .screen.active{display:block}
-  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  @media (prefers-reduced-motion:reduce){
-    .screen,.feedback,.shake{animation:none !important}
-  }
-
-  /* ---------- HOME ---------- */
   .hero{
-    background:var(--blue-deep);border-radius:var(--radius);
-    padding:18px 18px 16px;color:var(--blue-line);position:relative;overflow:hidden;
-    margin-bottom:18px;
+    background:var(--blue);border-radius:16px;padding:26px 24px;color:var(--blue-line);
+    position:relative;overflow:hidden;margin-bottom:26px;
   }
-  .hero::after{ /* faint drafting lines */
-    content:"";position:absolute;inset:0;opacity:.16;pointer-events:none;
-    background-image:
-      linear-gradient(to right, var(--blue-line) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--blue-line) 1px, transparent 1px);
-    background-size:26px 26px;
-  }
-  .hero h1{font-family:'Big Shoulders Display';font-weight:800;font-size:26px;letter-spacing:.03em;color:#fff;line-height:1.05;position:relative}
-  .hero p{font-size:13px;margin-top:6px;position:relative;color:var(--blue-dim)}
-  .hero .stat-row{display:flex;gap:14px;margin-top:14px;position:relative}
-  .stat{background:rgba(255,255,255,.08);border:1px solid rgba(221,233,251,.25);border-radius:10px;padding:8px 12px;flex:1}
-  .stat b{font-family:'IBM Plex Mono';font-size:17px;color:#fff;display:block}
-  .stat span{font-size:10.5px;color:var(--blue-dim)}
+  .hero::after{content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+    background-image:linear-gradient(to right,var(--blue-line) 1px,transparent 1px),
+    linear-gradient(to bottom,var(--blue-line) 1px,transparent 1px);background-size:26px 26px}
+  .kicker{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.16em;color:var(--orange);text-transform:uppercase;position:relative}
+  .hero h1{font-family:'Big Shoulders Display';font-weight:800;font-size:40px;letter-spacing:.02em;color:#fff;line-height:1;margin-top:8px;position:relative}
+  .hero p{margin-top:10px;font-size:15px;color:var(--blue-dim);position:relative}
+  .hero .who{margin-top:14px;font-family:'IBM Plex Mono';font-size:12px;color:var(--blue-line);position:relative}
 
-  .section-label{
-    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.12em;
-    color:var(--ink-soft);text-transform:uppercase;margin:0 0 10px 2px;
+  h2{
+    font-family:'Big Shoulders Display';font-weight:800;font-size:24px;letter-spacing:.03em;
+    color:var(--blue);margin:34px 0 4px;display:flex;align-items:baseline;gap:10px;
   }
-  .module{
-    width:100%;text-align:left;display:flex;align-items:center;gap:14px;
-    background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
-    padding:14px;margin-bottom:10px;cursor:pointer;font-family:inherit;
-  }
-  .module.active{border-color:var(--orange)}
-  .module .m-num{
-    font-family:'IBM Plex Mono';font-size:12px;color:var(--blue-deep);
-    width:44px;height:44px;flex:none;border:1.5px dashed var(--blue-dim);
-    border-radius:10px;display:grid;place-items:center;background:var(--paper);
-  }
-  .module.active .m-num{border-style:solid;border-color:var(--orange);color:var(--orange-dark);font-weight:500}
-  .module h3{font-size:14.5px;font-weight:600}
-  .module p{font-size:12px;color:var(--ink-soft);margin-top:2px}
-  .module .m-body{flex:1;min-width:0}
-  .module .m-cta{
-    font-family:'IBM Plex Mono';font-size:11px;flex:none;
-    color:var(--orange-dark);font-weight:500;
-  }
-  .module.locked{opacity:.55;cursor:default}
-  .module.locked .m-cta{color:var(--ink-soft)}
-  .progress-track{height:5px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden}
-  .progress-fill{height:100%;width:20%;background:var(--orange);border-radius:99px}
+  h2 .num{font-family:'IBM Plex Mono';font-weight:500;font-size:13px;color:var(--orange-dark)}
+  .rule{height:2px;background:var(--blue);opacity:.12;margin:6px 0 14px}
 
-  /* ---------- LESSON ---------- */
-  .lesson-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-  .back-btn{
-    border:1.5px solid var(--line);background:var(--card);border-radius:10px;
-    width:36px;height:36px;font-size:16px;cursor:pointer;color:var(--ink);flex:none;
-  }
-  .dots{display:flex;gap:6px;flex:1;justify-content:center}
-  .dot{width:26px;height:6px;border-radius:99px;background:var(--line)}
-  .dot.done{background:var(--green)}
-  .dot.wrong{background:var(--red)}
-  .dot.now{background:var(--orange)}
-  .q-count{font-family:'IBM Plex Mono';font-size:12px;color:var(--ink-soft);flex:none}
+  p{margin-bottom:12px}
+  strong{font-weight:600}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+  .card h3{font-size:15px;font-weight:600;margin-bottom:4px}
+  .card p{margin-bottom:0;font-size:14.5px;color:var(--ink-soft)}
+  .card.you{border-left:4px solid var(--blue)}
+  .card.me{border-left:4px solid var(--orange)}
 
-  .q-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
-  .q-tag{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.1em;color:var(--orange-dark);text-transform:uppercase}
-  .q-text{font-size:16px;font-weight:600;margin-top:6px;line-height:1.35}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1.5px solid var(--line);border-radius:14px;overflow:hidden;font-size:14px;margin-bottom:10px}
+  th{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);text-align:left;padding:10px 14px;border-bottom:1.5px solid var(--line);background:var(--paper)}
+  td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.mono{font-family:'IBM Plex Mono';white-space:nowrap;font-size:13px}
+  .fine{font-size:12.5px;color:var(--ink-soft)}
 
-  .plan-wrap{
-    border-radius:var(--radius);overflow:hidden;background:var(--blue-deep);
-    border:1.5px solid #0F2A57;box-shadow:inset 0 0 40px rgba(0,0,0,.25);
-  }
-  .plan-wrap svg{display:block;width:100%;height:auto}
-  .hotspot{fill:transparent;cursor:pointer}
-  .hotspot.correct-flash{fill:rgba(28,158,90,.35)}
-  .hotspot.wrong-flash{fill:rgba(214,64,46,.35)}
-  .plan-hint{
-    font-family:'IBM Plex Mono';font-size:11px;color:var(--ink-soft);
-    text-align:center;margin-top:8px;
-  }
-  .shake{animation:shake .3s ease}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .risk{display:flex;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+  .risk .tag{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;flex:none;
+    padding:3px 8px;border-radius:6px;height:fit-content;margin-top:2px}
+  .tag.alto{background:#FCEFED;color:var(--red);border:1px solid var(--red)}
+  .tag.medio{background:#FFF4EC;color:var(--orange-dark);border:1px solid var(--orange)}
+  .tag.bajo{background:#EDF9F2;color:var(--green);border:1px solid var(--green)}
+  .risk h3{font-size:14.5px;font-weight:600}
+  .risk p{font-size:13.5px;color:var(--ink-soft);margin:2px 0 0}
 
-  .choices{display:flex;flex-direction:column;gap:9px;margin-top:4px}
-  .choice{
-    text-align:left;background:var(--card);border:1.5px solid var(--line);
-    border-radius:12px;padding:13px 14px;font-size:14.5px;font-family:inherit;
-    cursor:pointer;display:flex;align-items:center;gap:10px;color:var(--ink);
+  .step{display:flex;gap:14px;margin-bottom:14px}
+  .step .n{
+    font-family:'IBM Plex Mono';font-size:12px;color:var(--blue);flex:none;
+    width:34px;height:34px;border:1.5px dashed var(--blue-dim);border-radius:9px;
+    display:grid;place-items:center;background:var(--card);margin-top:2px;
   }
-  .choice .key{
-    font-family:'IBM Plex Mono';font-size:11px;color:var(--ink-soft);
-    border:1px solid var(--line);border-radius:6px;padding:2px 7px;flex:none;
-  }
-  .choice.correct{border-color:var(--green);background:#EDF9F2}
-  .choice.wrong{border-color:var(--red);background:#FCEFED}
-  .choice:disabled{cursor:default}
-  .symbol-preview{
-    background:var(--blue-deep);border-radius:12px;padding:10px;
-    display:grid;place-items:center;margin-bottom:12px;border:1.5px solid #0F2A57;
-  }
+  .step h3{font-size:15px;font-weight:600}
+  .step p{font-size:14px;color:var(--ink-soft);margin:2px 0 0}
 
-  .feedback{
-    margin-top:14px;border-radius:var(--radius);padding:14px 15px;
-    display:none;animation:fade .25s ease;
+  .callout{
+    background:var(--blue);color:var(--blue-line);border-radius:14px;padding:18px 20px;margin-top:26px;
+    position:relative;overflow:hidden;
   }
-  .feedback.show{display:block}
-  .feedback.good{background:#EDF9F2;border:1.5px solid var(--green)}
-  .feedback.bad{background:#FCEFED;border:1.5px solid var(--red)}
-  .feedback h4{font-size:13.5px;display:flex;align-items:center;gap:7px}
-  .feedback.good h4{color:var(--green)}
-  .feedback.bad h4{color:var(--red)}
-  .feedback p{font-size:13px;color:var(--ink);margin-top:6px;line-height:1.45}
-  .btn{
-    width:100%;border:none;border-radius:12px;padding:14px;margin-top:12px;
-    font-family:'IBM Plex Sans';font-size:15px;font-weight:600;cursor:pointer;
-    background:var(--orange);color:#fff;box-shadow:0 3px 0 var(--orange-dark);
+  .callout::after{content:"";position:absolute;inset:0;opacity:.12;pointer-events:none;
+    background-image:linear-gradient(to right,var(--blue-line) 1px,transparent 1px),
+    linear-gradient(to bottom,var(--blue-line) 1px,transparent 1px);background-size:26px 26px}
+  .callout h3{font-family:'Big Shoulders Display';font-weight:800;font-size:20px;letter-spacing:.03em;color:#fff;position:relative}
+  .callout p{font-size:14px;margin-top:6px;position:relative;color:var(--blue-dim)}
+  .callout .stamp{
+    display:inline-block;margin-top:12px;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.12em;
+    border:2px solid var(--orange);color:var(--orange);padding:5px 12px;border-radius:6px;
+    transform:rotate(-3deg);text-transform:uppercase;position:relative;
   }
-  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--orange-dark)}
-  .btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
-
-  /* ---------- RESULTS ---------- */
-  .result-card{
-    background:var(--blue-deep);border-radius:var(--radius);padding:26px 20px;
-    text-align:center;color:#fff;position:relative;overflow:hidden;margin-top:8px;
+  .disclaimer{font-size:12px;color:var(--ink-soft);margin-top:28px;padding-top:14px;border-top:1px solid var(--line)}
+  .demo-btn{
+    display:inline-block;margin-top:16px;position:relative;
+    background:var(--orange);color:#fff;text-decoration:none;
+    font-family:'IBM Plex Sans';font-weight:600;font-size:15px;
+    padding:13px 22px;border-radius:12px;box-shadow:0 3px 0 var(--orange-dark);
   }
-  .result-card::after{
-    content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
-    background-image:
-      linear-gradient(to right, var(--blue-line) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--blue-line) 1px, transparent 1px);
-    background-size:26px 26px;
-  }
-  .score{font-family:'IBM Plex Mono';font-size:44px;font-weight:500;position:relative}
-  .score small{font-size:18px;color:var(--blue-dim)}
-  .result-card h2{font-family:'Big Shoulders Display';font-weight:800;font-size:24px;letter-spacing:.03em;margin-top:6px;position:relative}
-  .result-card p{font-size:13px;color:var(--blue-dim);margin-top:6px;position:relative}
-  .stamp{
-    position:relative;display:inline-block;margin-top:16px;
-    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.14em;
-    border:2px solid var(--orange);color:var(--orange);
-    padding:6px 14px;border-radius:6px;transform:rotate(-4deg);text-transform:uppercase;
-  }
+  .demo-btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--orange-dark)}
+  .demo-btn .mono{font-family:'IBM Plex Mono';font-size:12px;opacity:.85;display:block;font-weight:400;margin-top:2px}
+  .demo-btn.light{background:#fff;color:var(--blue);box-shadow:0 3px 0 var(--line)}
 </style>
 </head>
 <body>
-<div class="phone">
-  <header>
-    <div class="logo">
-      <div class="logo-mark">
-        <!-- section-cut mark as logo -->
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-          <circle cx="11" cy="11" r="8.5" stroke="#DDE9FB" stroke-width="1.6"/>
-          <line x1="11" y1="2.5" x2="11" y2="19.5" stroke="#FF6B1A" stroke-width="1.6"/>
-          <path d="M11 2.5 L14 6 H8 Z" fill="#FF6B1A"/>
-        </svg>
-      </div>
-      <div>
-        <div class="logo-type">EL PLANO</div>
-        <div class="logo-sub" data-i18n="tagline">Aprende a leer planos de obra</div>
-      </div>
-    </div>
-    <button class="lang" id="langBtn" aria-label="Switch language">EN</button>
-  </header>
+<div class="wrap">
 
-  <main id="main">
+  <div class="hero">
+    <div class="kicker">Propuesta de colaboración · Julio 2026</div>
+    <h1>EL PLANO</h1>
+    <p>Una app para enseñar a leer planos de construcción, en español, a los trabajadores que quieren subir de puesto — de ayudante a maestro de obra, capataz o inspector.</p>
+    <div class="who">Tu conocimiento de ingeniería + mi código = el curso que no existe en español.</div>
+    <a class="demo-btn" href="el-plano-mockup.html">▶ Prueba la app aquí<span class="mono">demo interactivo · 2 minutos</span></a>
+  </div>
 
-    <!-- ============ HOME ============ -->
-    <section class="screen active" id="home">
-      <div class="hero">
-        <h1 data-i18n="heroTitle">De ayudante a maestro de obra</h1>
-        <p data-i18n="heroSub">Domina los planos que ves todos los días en la obra. 5 minutos al día.</p>
-        <div class="stat-row">
-          <div class="stat"><b>3</b><span data-i18n="statStreak">días seguidos</span></div>
-          <div class="stat"><b>12</b><span data-i18n="statSymbols">símbolos dominados</span></div>
-          <div class="stat"><b>1/5</b><span data-i18n="statModules">módulos</span></div>
-        </div>
-      </div>
+  <h2><span class="num">01</span> ¿Qué es?</h2>
+  <div class="rule"></div>
+  <p>Piensa en Duolingo, pero para leer planos. Lecciones cortas de 5 minutos donde el usuario <strong>toca directamente sobre un plano real</strong>: "¿dónde está la puerta?", "¿qué significa este símbolo?", "si la escala es 1:50, ¿cuánto mide este muro?". Cada respuesta viene con una explicación corta — escrita por ti, con la voz de alguien que ha diseñado planos de verdad.</p>
+  <p>Ya existe una maqueta funcional que puedes probar en el teléfono. El mercado: millones de trabajadores hispanos de la construcción en EE.UU. que saben trabajar pero nadie les enseñó a leer el plano — y esa habilidad es la diferencia entre cobrar como ayudante y cobrar como capataz. Hoy no existe casi nada en español para esto.</p>
 
-      <p class="section-label" data-i18n="modulesLabel">Módulos del curso</p>
+  <h2><span class="num">02</span> ¿Quién hace qué?</h2>
+  <div class="rule"></div>
+  <div class="card you">
+    <h3>Tú — el experto (el contenido ES el producto)</h3>
+    <p>Escribes las preguntas, las explicaciones y creas los dibujos de enseñanza. Decides qué se enseña primero y qué confunde a un principiante. Tu experiencia como ingeniero civil es la credibilidad del curso: "creado por un ingeniero con años de obra".</p>
+  </div>
+  <div class="card me">
+    <h3>Yo — el que construye y vende</h3>
+    <p>Programo la app (ya tengo el sistema montado: apps en iPhone, páginas web, todo), la publico, y me encargo del marketing: TikTok, WhatsApp, App Store. Tú no tocas nada técnico.</p>
+  </div>
+  <p class="fine">El reparto de ganancias lo acordamos entre nosotros antes de empezar — por escrito, aunque seamos familia. Precisamente porque somos familia.</p>
 
-      <button class="module active" onclick="startLesson()">
-        <div class="m-num">M-01</div>
-        <div class="m-body">
-          <h3 data-i18n="m1t">Símbolos básicos</h3>
-          <p data-i18n="m1s">Puertas, ventanas, muros, cortes y cotas</p>
-          <div class="progress-track"><div class="progress-fill"></div></div>
-        </div>
-        <div class="m-cta" data-i18n="continue">SEGUIR ›</div>
-      </button>
+  <h2><span class="num">03</span> ¿Cuánto se puede ganar?</h2>
+  <div class="rule"></div>
+  <p>Números honestos, no fantasía. El modelo probable: curso por módulos, pago único de <strong>$15–25 por módulo</strong> o ~$49 el curso completo. Sin suscripción — este público prefiere pagar una vez.</p>
+  <table>
+    <tr><th>Escenario</th><th>Qué significa</th><th style="text-align:right">Ingreso bruto/año</th></tr>
+    <tr><td><strong>Bajo</strong></td><td>La validación funciona a medias; se queda en clases pagadas por WhatsApp y ventas lentas (100–300 ventas/año)</td><td class="mono" style="text-align:right">$2,000–7,000</td></tr>
+    <tr><td><strong>Base</strong></td><td>La app funciona, el TikTok trae gente constante (1,000–2,000 ventas/año)</td><td class="mono" style="text-align:right">$20,000–50,000</td></tr>
+    <tr><td><strong>Alto</strong></td><td>Se vuelve LA referencia en español; empresas compran licencias para capacitar cuadrillas</td><td class="mono" style="text-align:right">$100,000+</td></tr>
+  </table>
+  <p class="fine">Bruto = antes de dividir entre nosotros y antes de la comisión de Apple (~15–30%) e impuestos. El escenario alto es posible pero no prometido: depende del punto que nadie controla al 100% — la distribución. Lo más probable al inicio: un ingreso extra, no un sueldo. Crece si el contenido y el marketing crecen.</p>
 
-      <button class="module locked" tabindex="-1">
-        <div class="m-num">M-02</div>
-        <div class="m-body">
-          <h3 data-i18n="m2t">Cortes y secciones</h3>
-          <p data-i18n="m2s">Cómo se lee un corte A-A y una elevación</p>
-        </div>
-        <div class="m-cta">🔒</div>
-      </button>
+  <h2><span class="num">04</span> Riesgos reales</h2>
+  <div class="rule"></div>
+  <div class="risk"><span class="tag alto">Alto</span><div>
+    <h3>Tu tiempo de contenido</h3>
+    <p>Un curso creíble necesita cientos de preguntas y decenas de dibujos originales. Eso son muchas horas tuyas, repartidas en meses. Si no disfrutas enseñar esto, el proyecto muere — por eso lo probamos antes de programar nada.</p>
+  </div></div>
+  <div class="risk"><span class="tag alto">Alto</span><div>
+    <h3>Distribución</h3>
+    <p>Que el producto sea bueno no garantiza que la gente lo encuentre. Ese es mi trabajo (TikTok, WhatsApp, boca a boca en las obras), y es el riesgo #1 de cualquier app.</p>
+  </div></div>
+  <div class="risk"><span class="tag medio">Medio</span><div>
+    <h3>¿Pagarán?</h3>
+    <p>El valor es real (subir a capataz son miles de dólares más al año), pero es un público sensible al precio. Solo lo sabremos cobrando desde el día uno — nunca regalando.</p>
+  </div></div>
+  <div class="risk"><span class="tag bajo">Bajo</span><div>
+    <h3>Competencia</h3>
+    <p>Hoy casi no existe nada bilingüe ni en español para esto. La ventana está abierta.</p>
+  </div></div>
 
-      <button class="module locked" tabindex="-1">
-        <div class="m-num">M-03</div>
-        <div class="m-body">
-          <h3 data-i18n="m3t">Cotas y escalas</h3>
-          <p data-i18n="m3s">Medidas reales a partir del plano</p>
-        </div>
-        <div class="m-cta">🔒</div>
-      </button>
+  <h2><span class="num">05</span> Responsabilidad legal</h2>
+  <div class="rule"></div>
+  <p>Buena noticia: <strong>enseñar es la versión de menor riesgo legal de tu conocimiento.</strong> No estamos calculando estructuras ni diciéndole a nadie qué muro tumbar — solo enseñamos a leer. Tres reglas que sí cumplimos desde el día uno:</p>
+  <div class="step"><div class="n">R-1</div><div>
+    <h3>Solo dibujos originales</h3>
+    <p>Nunca usamos planos de tus trabajos o empleadores anteriores — esos planos pertenecen a las firmas o los clientes. Todos los planos de la app los creas tú, ficticios, para enseñar.</p>
+  </div></div>
+  <div class="step"><div class="n">R-2</div><div>
+    <h3>Sin promesas de certificación</h3>
+    <p>Decimos "aprende a leer planos", nunca "sal certificado como inspector". Las certificaciones (ICC, licencias estatales) pertenecen a organismos oficiales y no las tocamos.</p>
+  </div></div>
+  <div class="step"><div class="n">R-3</div><div>
+    <h3>Aviso educativo estándar</h3>
+    <p>Términos de servicio claros: la app es educativa, no es asesoría de ingeniería ni sustituye a un profesional licenciado. Es el mismo aviso que usa cualquier plataforma de cursos.</p>
+  </div></div>
+  <p class="fine">Si el proyecto despega, una consulta de una hora con un abogado antes de escalar. Nada de esto es asesoría legal — es el plan de sentido común.</p>
 
-      <button class="module locked" tabindex="-1">
-        <div class="m-num">M-04</div>
-        <div class="m-body">
-          <h3 data-i18n="m4t">Plano eléctrico</h3>
-          <p data-i18n="m4s">Contactos, apagadores y circuitos</p>
-        </div>
-        <div class="m-cta">🔒</div>
-      </button>
+  <h2><span class="num">06</span> El primer paso — sin programar nada</h2>
+  <div class="rule"></div>
+  <p>Regla de la casa: <strong>no se construye nada hasta que alguien pague.</strong> El primer paso no es la app, es esto:</p>
+  <div class="step"><div class="n">01</div><div>
+    <h3>Una clase pagada por WhatsApp o Zoom</h3>
+    <p>Tú das una clase de 1 hora: "Aprende a leer un plano en una hora". Cobramos $10–20 por persona. Yo la promociono.</p>
+  </div></div>
+  <div class="step"><div class="n">02</div><div>
+    <h3>La meta: 10 personas que paguen</h3>
+    <p>Si 10 trabajadores pagan por aprender esto, la app tiene mercado. Si nadie paga, nos ahorramos meses de trabajo — y perdimos solo una tarde.</p>
+  </div></div>
+  <div class="step"><div class="n">03</div><div>
+    <h3>La clase se convierte en el Módulo 1</h3>
+    <p>Lo que enseñes en esa hora es exactamente el primer contenido de la app. Nada se pierde.</p>
+  </div></div>
 
-      <button class="module locked" tabindex="-1">
-        <div class="m-num">M-05</div>
-        <div class="m-body">
-          <h3 data-i18n="m5t">Cimentación y estructura</h3>
-          <p data-i18n="m5s">Zapatas, castillos, trabes y armado</p>
-        </div>
-        <div class="m-cta">🔒</div>
-      </button>
-    </section>
+  <div class="callout">
+    <h3>En resumen</h3>
+    <p>Riesgo legal: bajo y controlable. Riesgo de negocio: real, pero lo probamos con una clase de $10 antes de invertir un solo mes. Lo que tú tienes — saber leer y explicar un plano — es exactamente lo que miles de trabajadores necesitan y nadie les ofrece en español.</p>
+    <div class="stamp">Primer paso: una clase, no una app</div>
+    <br>
+    <a class="demo-btn light" href="el-plano-mockup.html">▶ Prueba la demo en tu teléfono</a>
+  </div>
 
-    <!-- ============ LESSON ============ -->
-    <section class="screen" id="lesson">
-      <div class="lesson-top">
-        <button class="back-btn" onclick="goHome()" aria-label="Back">←</button>
-        <div class="dots" id="dots"></div>
-        <div class="q-count" id="qCount">1/5</div>
-      </div>
+  <div class="disclaimer">Este documento es un resumen de una idea entre familia, no una oferta formal ni asesoría legal o financiera. Los números son estimaciones para conversar, no proyecciones garantizadas.</div>
 
-      <div class="q-card">
-        <div class="q-tag" id="qTag"></div>
-        <div class="q-text" id="qText"></div>
-      </div>
-
-      <div id="qBody"></div>
-
-      <div class="feedback" id="feedback">
-        <h4 id="fbTitle"></h4>
-        <p id="fbText"></p>
-        <button class="btn" id="nextBtn" onclick="nextQuestion()"></button>
-      </div>
-    </section>
-
-    <!-- ============ RESULTS ============ -->
-    <section class="screen" id="results">
-      <div class="result-card">
-        <div class="score"><span id="scoreNum">0</span><small>/5</small></div>
-        <h2 id="resTitle"></h2>
-        <p id="resSub"></p>
-        <div class="stamp" data-i18n="stamp">Lección aprobada</div>
-      </div>
-      <button class="btn" onclick="startLesson()" data-i18n="retry">Repetir lección</button>
-      <button class="btn ghost" onclick="goHome()" data-i18n="backHome">Volver a los módulos</button>
-    </section>
-
-  </main>
 </div>
-
-<script>
-/* =============== i18n =============== */
-let lang = 'es';
-const STR = {
-  es:{
-    tagline:'Aprende a leer planos de obra',
-    heroTitle:'De ayudante a maestro de obra',
-    heroSub:'Domina los planos que ves todos los días en la obra. 5 minutos al día.',
-    statStreak:'días seguidos', statSymbols:'símbolos dominados', statModules:'módulos',
-    modulesLabel:'Módulos del curso',
-    m1t:'Símbolos básicos', m1s:'Puertas, ventanas, muros, cortes y cotas',
-    m2t:'Cortes y secciones', m2s:'Cómo se lee un corte A-A y una elevación',
-    m3t:'Cotas y escalas', m3s:'Medidas reales a partir del plano',
-    m4t:'Plano eléctrico', m4s:'Contactos, apagadores y circuitos',
-    m5t:'Cimentación y estructura', m5s:'Zapatas, castillos, trabes y armado',
-    continue:'SEGUIR ›',
-    tapTag:'Toca en el plano', mcTag:'Opción múltiple',
-    planHint:'Toca directamente sobre el dibujo',
-    correct:'✓ Correcto', incorrect:'✗ Casi — mira aquí',
-    next:'Siguiente', finish:'Ver resultado',
-    stamp:'Lección aprobada', retry:'Repetir lección', backHome:'Volver a los módulos',
-    resGood:'¡Ya lees como maestro!', resMid:'Vas bien, sigue así', resLow:'Repite y lo dominas',
-    resSub:'Símbolos básicos · Lección 2 de 5'
-  },
-  en:{
-    tagline:'Learn to read construction drawings',
-    heroTitle:'From laborer to foreman',
-    heroSub:'Master the drawings you see on site every day. 5 minutes a day.',
-    statStreak:'day streak', statSymbols:'symbols mastered', statModules:'modules',
-    modulesLabel:'Course modules',
-    m1t:'Basic symbols', m1s:'Doors, windows, walls, cuts and dimensions',
-    m2t:'Cuts & sections', m2s:'How to read an A-A section and an elevation',
-    m3t:'Dimensions & scales', m3s:'Real measurements from the drawing',
-    m4t:'Electrical plan', m4s:'Outlets, switches and circuits',
-    m5t:'Foundation & structure', m5s:'Footings, columns, beams and rebar',
-    continue:'CONTINUE ›',
-    tapTag:'Tap on the plan', mcTag:'Multiple choice',
-    planHint:'Tap directly on the drawing',
-    correct:'✓ Correct', incorrect:'✗ Almost — look here',
-    next:'Next', finish:'See results',
-    stamp:'Lesson passed', retry:'Repeat lesson', backHome:'Back to modules',
-    resGood:'You read like a foreman!', resMid:'Good progress, keep going', resLow:'Repeat it and you\'ll master it',
-    resSub:'Basic symbols · Lesson 2 of 5'
-  }
-};
-function t(k){return STR[lang][k]}
-function applyI18n(){
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k=el.getAttribute('data-i18n'); if(STR[lang][k]) el.textContent=STR[lang][k];
-  });
-  document.getElementById('langBtn').textContent = lang==='es' ? 'EN' : 'ES';
-  document.documentElement.lang = lang;
-}
-document.getElementById('langBtn').addEventListener('click',()=>{
-  lang = lang==='es' ? 'en' : 'es';
-  applyI18n();
-  if(document.getElementById('lesson').classList.contains('active')) renderQuestion(false);
-});
-
-/* =============== blueprint SVG =============== */
-/* white-line floor plan on blueprint blue, with id'd hotspots */
-function planSVG(){
-  return `
-  <svg viewBox="0 0 720 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Floor plan">
-    <defs>
-      <pattern id="bgrid" width="24" height="24" patternUnits="userSpaceOnUse">
-        <path d="M24 0H0V24" fill="none" stroke="#DDE9FB" stroke-width="0.5" opacity="0.12"/>
-      </pattern>
-    </defs>
-    <rect width="720" height="470" fill="#16386F"/>
-    <rect width="720" height="470" fill="url(#bgrid)"/>
-
-    <!-- dimension line (top) -->
-    <g stroke="#8FB2E8" stroke-width="1.2" id="g-dim">
-      <line x1="120" y1="52" x2="600" y2="52"/>
-      <line x1="120" y1="44" x2="120" y2="60"/>
-      <line x1="600" y1="44" x2="600" y2="60"/>
-      <path d="M120 52 l10 -4 v8 Z" fill="#8FB2E8" stroke="none"/>
-      <path d="M600 52 l-10 -4 v8 Z" fill="#8FB2E8" stroke="none"/>
-    </g>
-    <text x="360" y="44" fill="#DDE9FB" font-family="'IBM Plex Mono',monospace" font-size="17" text-anchor="middle">6.40 m</text>
-
-    <!-- outer walls (double line) -->
-    <g stroke="#FFFFFF" stroke-width="2.5" fill="none">
-      <rect x="120" y="90" width="480" height="300"/>
-      <rect x="128" y="98" width="464" height="284"/>
-    </g>
-    <!-- interior wall -->
-    <g stroke="#FFFFFF" stroke-width="2" fill="none">
-      <line x1="380" y1="98" x2="380" y2="240"/>
-      <line x1="388" y1="98" x2="388" y2="240"/>
-      <line x1="380" y1="240" x2="388" y2="240"/>
-    </g>
-
-    <!-- DOOR: opening in bottom wall + quarter-arc swing -->
-    <rect x="240" y="382" width="70" height="10" fill="#16386F"/>
-    <g stroke="#FFFFFF" stroke-width="2" fill="none">
-      <line x1="240" y1="388" x2="240" y2="318"/>
-      <path d="M240 318 A70 70 0 0 1 310 388"/>
-    </g>
-
-    <!-- WINDOW left wall: triple line -->
-    <rect x="116" y="180" width="18" height="80" fill="#16386F"/>
-    <g stroke="#FFFFFF" stroke-width="1.6">
-      <line x1="120" y1="180" x2="120" y2="260"/>
-      <line x1="126" y1="180" x2="126" y2="260"/>
-      <line x1="132" y1="180" x2="132" y2="260"/>
-    </g>
-
-    <!-- WINDOW right wall: triple line -->
-    <rect x="586" y="150" width="18" height="90" fill="#16386F"/>
-    <g stroke="#FFFFFF" stroke-width="1.6">
-      <line x1="588" y1="150" x2="588" y2="240"/>
-      <line x1="594" y1="150" x2="594" y2="240"/>
-      <line x1="600" y1="150" x2="600" y2="240"/>
-    </g>
-
-    <!-- SECTION MARK A-A through plan -->
-    <g id="g-section">
-      <line x1="470" y1="70" x2="470" y2="410" stroke="#FF6B1A" stroke-width="1.6" stroke-dasharray="10 6"/>
-      <circle cx="470" cy="70" r="15" fill="#16386F" stroke="#FF6B1A" stroke-width="2"/>
-      <text x="470" y="75" fill="#FF6B1A" font-family="'IBM Plex Mono',monospace" font-size="13" text-anchor="middle">A</text>
-      <path d="M470 40 L479 55 H461 Z" fill="#FF6B1A"/>
-      <circle cx="470" cy="410" r="15" fill="#16386F" stroke="#FF6B1A" stroke-width="2"/>
-      <text x="470" y="415" fill="#FF6B1A" font-family="'IBM Plex Mono',monospace" font-size="13" text-anchor="middle">A</text>
-      <path d="M470 440 L479 425 H461 Z" fill="#FF6B1A" transform="rotate(180 470 432)"/>
-    </g>
-
-    <!-- room labels -->
-    <text x="250" y="220" fill="#DDE9FB" font-family="'IBM Plex Mono',monospace" font-size="14" text-anchor="middle">SALA</text>
-    <text x="250" y="240" fill="#8FB2E8" font-family="'IBM Plex Mono',monospace" font-size="11" text-anchor="middle">18.2 m²</text>
-    <text x="495" y="300" fill="#DDE9FB" font-family="'IBM Plex Mono',monospace" font-size="14" text-anchor="middle">COCINA</text>
-    <text x="495" y="320" fill="#8FB2E8" font-family="'IBM Plex Mono',monospace" font-size="11" text-anchor="middle">9.6 m²</text>
-
-    <!-- north arrow -->
-    <g transform="translate(660,105)">
-      <circle r="17" fill="none" stroke="#8FB2E8" stroke-width="1.4"/>
-      <path d="M0 -13 L6 8 L0 3 L-6 8 Z" fill="#DDE9FB"/>
-      <text y="30" fill="#8FB2E8" font-family="'IBM Plex Mono',monospace" font-size="10" text-anchor="middle">N</text>
-    </g>
-
-    <!-- title block -->
-    <g id="g-title">
-      <rect x="510" y="420" width="196" height="40" fill="none" stroke="#8FB2E8" stroke-width="1.2"/>
-      <line x1="510" y1="440" x2="706" y2="440" stroke="#8FB2E8" stroke-width="1"/>
-      <text x="608" y="435" fill="#DDE9FB" font-family="'IBM Plex Mono',monospace" font-size="11" text-anchor="middle">PLANTA BAJA</text>
-      <text x="608" y="454" fill="#8FB2E8" font-family="'IBM Plex Mono',monospace" font-size="11" text-anchor="middle">ESC 1:50 · A-01</text>
-    </g>
-
-    <!-- HOTSPOTS (transparent, on top) -->
-    <rect class="hotspot" id="hs-door"    x="225" y="300" width="100" height="105" rx="8" data-hs="door"/>
-    <rect class="hotspot" id="hs-win1"    x="100" y="165" width="50"  height="110" rx="8" data-hs="window"/>
-    <rect class="hotspot" id="hs-win2"    x="570" y="135" width="50"  height="120" rx="8" data-hs="window"/>
-    <rect class="hotspot" id="hs-section" x="440" y="30"  width="60"  height="60"  rx="8" data-hs="section"/>
-    <rect class="hotspot" id="hs-dim"     x="130" y="20"  width="460" height="48"  rx="8" data-hs="dim"/>
-    <rect class="hotspot" id="hs-title"   x="505" y="415" width="205" height="50"  rx="8" data-hs="title"/>
-    <rect class="hotspot" id="hs-wall"    x="370" y="110" width="30"  height="120" rx="8" data-hs="wall"/>
-  </svg>`;
-}
-
-/* mini symbol for MC question (window in plan) */
-function windowSymbolSVG(){
-  return `
-  <svg viewBox="0 0 200 90" width="180" height="82" xmlns="http://www.w3.org/2000/svg" aria-label="Symbol">
-    <rect width="200" height="90" fill="#16386F"/>
-    <g stroke="#FFFFFF" stroke-width="3"><line x1="20" y1="30" x2="70" y2="30"/><line x1="130" y1="30" x2="180" y2="30"/>
-    <line x1="20" y1="60" x2="70" y2="60"/><line x1="130" y1="60" x2="180" y2="60"/></g>
-    <g stroke="#FFFFFF" stroke-width="2"><line x1="70" y1="34" x2="130" y2="34"/><line x1="70" y1="45" x2="130" y2="45"/><line x1="70" y1="56" x2="130" y2="56"/>
-    <line x1="70" y1="30" x2="70" y2="60"/><line x1="130" y1="30" x2="130" y2="60"/></g>
-  </svg>`;
-}
-
-/* =============== questions =============== */
-const QUESTIONS = [
-  { type:'tap', target:'door',
-    q:{es:'Toca la puerta en el plano.', en:'Tap the door on the plan.'},
-    exp:{es:'La puerta se dibuja con un arco de un cuarto de círculo: muestra hacia dónde abre la hoja. El hueco en el muro es el vano.',
-         en:'A door is drawn with a quarter-circle arc: it shows which way the leaf swings. The gap in the wall is the opening.'} },
-  { type:'mc', symbol:true, answer:0,
-    q:{es:'¿Qué representa este símbolo?', en:'What does this symbol represent?'},
-    opts:{es:['Ventana','Puerta corrediza','Viga','Muro de carga'],
-          en:['Window','Sliding door','Beam','Load-bearing wall']},
-    exp:{es:'Tres líneas paralelas dentro del muro = ventana en planta. Las líneas representan el marco y el vidrio.',
-         en:'Three parallel lines inside the wall = a window in plan view. The lines represent the frame and the glass.'} },
-  { type:'tap', target:'section',
-    q:{es:'¿Dónde está la marca de corte A-A?', en:'Where is the A-A section mark?'},
-    exp:{es:'El círculo con la letra A y la línea discontinua marcan por dónde se “corta” el edificio. Ese corte se dibuja en otra hoja como sección A-A.',
-         en:'The circle with the letter A and the dashed line mark where the building is “cut”. That cut is drawn on another sheet as section A-A.'} },
-  { type:'mc', answer:0,
-    q:{es:'El plano dice ESC 1:50. Entonces 1 cm en el papel equivale a…', en:'The sheet says SCALE 1:50. So 1 cm on paper equals…'},
-    opts:{es:['50 cm reales','5 cm reales','1.5 m reales','50 m reales'],
-          en:['50 cm in real life','5 cm in real life','1.5 m in real life','50 m in real life']},
-    exp:{es:'En escala 1:50, todo lo real es 50 veces más grande que en el papel. 1 cm × 50 = 50 cm. La escala siempre está en el cuadro de títulos.',
-         en:'At 1:50 scale, everything real is 50 times bigger than on paper. 1 cm × 50 = 50 cm. The scale is always in the title block.'} },
-  { type:'tap', target:'dim',
-    q:{es:'Toca la cota que indica el ancho total de la casa.', en:'Tap the dimension that shows the total width of the house.'},
-    exp:{es:'La línea con flechas en las puntas es la cota: aquí dice 6.40 m de muro a muro. Las cotas mandan sobre la medida a escala.',
-         en:'The line with arrows at both ends is the dimension line: here it reads 6.40 m wall to wall. Written dimensions always override scaled measurements.'} }
-];
-
-/* =============== state & flow =============== */
-let qIndex = 0, score = 0, answered = false, results = [];
-
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.getElementById('main').scrollTop = 0;
-}
-function goHome(){ show('home'); }
-function startLesson(){
-  qIndex = 0; score = 0; results = [];
-  show('lesson');
-  renderQuestion(true);
-}
-
-function renderDots(){
-  const d = document.getElementById('dots'); d.innerHTML='';
-  QUESTIONS.forEach((_,i)=>{
-    const el = document.createElement('div'); el.className='dot';
-    if(results[i]===true) el.classList.add('done');
-    else if(results[i]===false) el.classList.add('wrong');
-    else if(i===qIndex) el.classList.add('now');
-    d.appendChild(el);
-  });
-  document.getElementById('qCount').textContent = (qIndex+1)+'/'+QUESTIONS.length;
-}
-
-function renderQuestion(reset){
-  if(reset!==false) answered = false;
-  const q = QUESTIONS[qIndex];
-  renderDots();
-  document.getElementById('qTag').textContent = q.type==='tap' ? t('tapTag') : t('mcTag');
-  document.getElementById('qText').textContent = q.q[lang];
-  const body = document.getElementById('qBody');
-  const fb = document.getElementById('feedback');
-  if(!answered){ fb.className='feedback'; }
-
-  if(q.type==='tap'){
-    body.innerHTML = `<div class="plan-wrap" id="planWrap">${planSVG()}</div>
-                      <div class="plan-hint">${t('planHint')}</div>`;
-    body.querySelectorAll('.hotspot').forEach(hs=>{
-      hs.addEventListener('click',()=>onTap(hs,q));
-    });
-  } else {
-    let html = '';
-    if(q.symbol) html += `<div class="symbol-preview">${windowSymbolSVG()}</div>`;
-    html += `<div class="choices">` + q.opts[lang].map((o,i)=>
-      `<button class="choice" data-i="${i}"><span class="key">${String.fromCharCode(65+i)}</span>${o}</button>`
-    ).join('') + `</div>`;
-    body.innerHTML = html;
-    body.querySelectorAll('.choice').forEach(btn=>{
-      btn.addEventListener('click',()=>onChoice(btn,q));
-    });
-  }
-}
-
-function onTap(hs,q){
-  if(answered) return;
-  const ok = hs.dataset.hs === q.target;
-  if(ok){
-    answered = true;
-    hs.classList.add('correct-flash');
-    finishAnswer(true,q);
-  } else {
-    hs.classList.add('wrong-flash');
-    const wrap = document.getElementById('planWrap');
-    wrap.classList.remove('shake'); void wrap.offsetWidth; wrap.classList.add('shake');
-    setTimeout(()=>hs.classList.remove('wrong-flash'),450);
-    if(!results.hasOwnProperty(qIndex)) { /* first wrong tap marks it */ }
-    // one wrong tap = question counts as missed, but let them find it
-    if(results[qIndex]===undefined){ results[qIndex]=false; renderDots(); }
-  }
-}
-function onChoice(btn,q){
-  if(answered) return;
-  answered = true;
-  const i = +btn.dataset.i;
-  const ok = i===q.answer;
-  btn.classList.add(ok?'correct':'wrong');
-  const all = btn.parentElement.querySelectorAll('.choice');
-  all.forEach(b=>{ b.disabled=true; if(+b.dataset.i===q.answer) b.classList.add('correct'); });
-  finishAnswer(ok,q);
-}
-function finishAnswer(ok,q){
-  if(results[qIndex]===undefined) results[qIndex]=ok;
-  if(results[qIndex]) score = results.filter(r=>r===true).length;
-  score = results.filter(r=>r===true).length;
-  renderDots();
-  const fb = document.getElementById('feedback');
-  fb.className = 'feedback show ' + (results[qIndex] ? 'good':'bad');
-  document.getElementById('fbTitle').textContent = results[qIndex] ? t('correct') : t('incorrect');
-  document.getElementById('fbText').textContent = q.exp[lang];
-  document.getElementById('nextBtn').textContent = (qIndex===QUESTIONS.length-1) ? t('finish') : t('next');
-}
-function nextQuestion(){
-  if(qIndex === QUESTIONS.length-1){ showResults(); return; }
-  qIndex++;
-  renderQuestion(true);
-}
-function showResults(){
-  show('results');
-  document.getElementById('scoreNum').textContent = score;
-  const title = score>=5 ? t('resGood') : score>=3 ? t('resMid') : t('resLow');
-  document.getElementById('resTitle').textContent = title;
-  document.getElementById('resSub').textContent = t('resSub');
-}
-
-applyI18n();
-</script>
 </body>
 </html>
