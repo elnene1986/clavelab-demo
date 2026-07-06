@@ -1,1696 +1,655 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClaveLab · Maqueta Interactiva</title>
-<meta name="description" content="Prototipo interactivo de ClaveLab — el entrenador de clave de 5 minutos al día para bailadores de salsa.">
-<meta name="theme-color" content="#0c1a26">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>El Plano — Aprende a leer planos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,600;1,9..144,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#0c1a26;
-    --ink-2:#10283a;
-    --ink-3:#0a1c29;
-    --paper:#f3e8cf;
-    --cream:#ecddb8;
-    --rojo:#c93128;
-    --rojo-deep:#8a1f1a;
-    --amber:#f1a83a;
-    --gold:#d29239;
-    --teal:#2c8589;
-    --teal-deep:#1a5a5d;
-    --green:#5d8b54;
-    --green-deep:#3a5f33;
-    --line:rgba(243,232,207,0.14);
-    --line-soft:rgba(243,232,207,0.06);
+    --blue-deep:#16386F;      /* blueprint field */
+    --blue-line:#DDE9FB;      /* drawing linework on blue */
+    --blue-dim:#8FB2E8;       /* secondary linework */
+    --paper:#F2F5F9;          /* drafting paper */
+    --ink:#14202E;
+    --ink-soft:#54627A;
+    --orange:#FF6B1A;         /* hi-vis accent */
+    --orange-dark:#D9530A;
+    --green:#1C9E5A;
+    --red:#D6402E;
+    --card:#FFFFFF;
+    --line:#D7DFEA;
+    --radius:14px;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{overscroll-behavior:none}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
   body{
-    background:#1a1410;
-    min-height:100vh;
-    font-family:'Fraunces',Georgia,serif;
-    color:var(--paper);
-    padding:30px 16px 60px;
-    background-image:
-      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(44,133,137,0.18) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 50% 100%, rgba(201,49,40,0.12) 0%, transparent 65%),
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-    background-attachment:fixed;
+    font-family:'IBM Plex Sans',sans-serif;
+    background:#233247;
+    color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:18px 0;
   }
-
-  /* PRESENTATION HEADER */
-  .pres-header{
-    max-width:1100px;
-    margin:0 auto 28px;
-    text-align:center;
-  }
-  .pres-eyebrow{
-    font-family:'DM Mono',monospace;
-    font-size:11px;
-    letter-spacing:0.34em;
-    color:var(--amber);
-    text-transform:uppercase;
-    margin-bottom:6px;
-  }
-  .pres-title{
-    font-family:'Fraunces',serif;
-    font-weight:900;
-    font-style:italic;
-    font-size:clamp(28px,5vw,44px);
-    line-height:1;
-    color:var(--paper);
-    text-shadow:0 2px 0 var(--rojo-deep), 3px 4px 0 rgba(0,0,0,0.4);
-  }
-  .pres-title em{color:var(--amber)}
-  .pres-sub{
-    margin-top:8px;
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-size:15px;
-    color:var(--cream);
-    opacity:0.75;
-  }
-
-  /* PHONE STAGE */
-  .stage{
-    max-width:1100px;
-    margin:0 auto;
-    display:grid;
-    grid-template-columns: 1fr 380px 1fr;
-    gap:24px;
-    align-items:start;
-  }
-  .stage-side{
-    padding-top:30px;
-  }
-  .stage-side h3{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:22px;
-    color:var(--paper);
-    margin-bottom:10px;
-    line-height:1.05;
-  }
-  .stage-side h3 em{color:var(--amber)}
-  .stage-side p{
-    font-family:'Fraunces',serif;
-    font-size:14px;
-    line-height:1.5;
-    color:var(--cream);
-    opacity:0.85;
-    margin-bottom:14px;
-  }
-  .stage-side ul{
-    list-style:none;
-    padding:0;
-  }
-  .stage-side ul li{
-    font-family:'Fraunces',serif;
-    font-size:13px;
-    line-height:1.45;
-    color:var(--cream);
-    opacity:0.8;
-    padding:6px 0 6px 18px;
-    position:relative;
-    border-bottom:1px dashed var(--line-soft);
-  }
-  .stage-side ul li::before{
-    content:'✦';
-    position:absolute;
-    left:0;
-    color:var(--rojo);
-    font-size:10px;
-  }
-  .stage-side .note{
-    margin-top:18px;
-    padding:14px;
-    background:rgba(241,168,58,0.08);
-    border:1px solid rgba(241,168,58,0.25);
-    border-radius:10px;
-    font-family:'DM Mono',monospace;
-    font-size:11px;
-    line-height:1.5;
-    color:var(--amber);
-    letter-spacing:0.04em;
-  }
-
-  /* PHONE FRAME */
+  /* phone shell */
   .phone{
-    width:380px;
-    height:780px;
-    background:#000;
-    border-radius:44px;
-    padding:14px;
-    position:relative;
-    box-shadow:
-      0 30px 80px rgba(0,0,0,0.7),
-      0 0 0 2px #2a2520,
-      inset 0 0 0 1px rgba(255,255,255,0.05);
-    margin:0 auto;
-  }
-  .phone::before{
-    content:'';
-    position:absolute;
-    top:18px;left:50%;
-    transform:translateX(-50%);
-    width:90px;height:24px;
-    background:#000;
-    border-radius:14px;
-    z-index:10;
-  }
-  .phone-screen{
-    width:100%;
-    height:100%;
-    background:var(--ink);
-    border-radius:32px;
-    overflow:hidden;
-    position:relative;
-    background-image:
-      radial-gradient(ellipse 80% 40% at 50% 0%, rgba(44,133,137,0.15) 0%, transparent 65%),
-      radial-gradient(ellipse 60% 30% at 50% 100%, rgba(201,49,40,0.1) 0%, transparent 60%);
-  }
-
-  /* SCREENS — only one visible at a time */
-  .screen{
-    position:absolute;
-    inset:0;
-    padding:50px 20px 80px;
-    display:flex;
-    flex-direction:column;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity 0.35s ease;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-  .screen::-webkit-scrollbar{display:none}
-  .screen{scrollbar-width:none}
-  .screen.active{opacity:1;pointer-events:auto}
-
-  /* STATUS BAR (decorative) */
-  .status-bar{
-    position:absolute;
-    top:16px;left:0;right:0;
-    height:20px;
-    padding:0 28px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-family:'DM Mono',monospace;
-    font-size:11px;
-    color:var(--paper);
-    font-weight:500;
-    z-index:5;
-    pointer-events:none;
-  }
-  .status-right{display:flex;gap:4px;align-items:center}
-  .status-right svg{width:14px;height:14px;fill:var(--paper)}
-
-  /* BOTTOM NAV */
-  .bottom-nav{
-    position:absolute;
-    bottom:0;left:0;right:0;
-    height:64px;
-    background:rgba(10,20,30,0.92);
-    backdrop-filter:blur(20px);
-    border-top:1px solid var(--line);
-    display:flex;
-    z-index:8;
-  }
-  .nav-item{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:3px;
-    cursor:pointer;
-    color:var(--cream);
-    opacity:0.5;
-    transition:all 0.2s;
-    border:none;
-    background:transparent;
-    padding:0;
-  }
-  .nav-item.active{opacity:1;color:var(--amber)}
-  .nav-item:active{transform:scale(0.92)}
-  .nav-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:18px}
-  .nav-label{
-    font-family:'DM Mono',monospace;
-    font-size:9px;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
-  }
-
-  /* SCREEN: HOME / TODAY */
-  .home-header{
-    margin-bottom:18px;
-  }
-  .greeting-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:6px;
-  }
-  .greeting{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-size:14px;
-    color:var(--cream);
-    opacity:0.7;
-  }
-  .streak-badge{
-    display:flex;
-    align-items:center;
-    gap:4px;
-    padding:3px 9px;
-    background:rgba(201,49,40,0.2);
-    border:1px solid var(--rojo);
-    border-radius:50px;
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    color:var(--rojo);
-    letter-spacing:0.08em;
-    font-weight:500;
-  }
-  .home-title{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:32px;
-    line-height:1;
-    color:var(--paper);
-    letter-spacing:-0.01em;
-    margin-bottom:2px;
-  }
-  .home-title em{color:var(--amber)}
-  .home-date{
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    letter-spacing:0.18em;
-    color:var(--cream);
-    opacity:0.5;
-    text-transform:uppercase;
-  }
-
-  /* TODAY'S LESSON CARD */
-  .lesson-card{
-    margin-top:18px;
-    background:linear-gradient(155deg, var(--rojo-deep) 0%, var(--rojo) 65%, var(--gold) 130%);
-    border-radius:18px;
-    padding:18px;
-    position:relative;
-    overflow:hidden;
-    box-shadow:0 12px 32px rgba(201,49,40,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
-    cursor:pointer;
-    transition:transform 0.15s;
-  }
-  .lesson-card:active{transform:scale(0.98)}
-  .lesson-card::after{
-    content:'';
-    position:absolute;
-    right:-30px;bottom:-30px;
-    width:130px;height:130px;
-    border-radius:50%;
-    background:radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
-    pointer-events:none;
-  }
-  .lesson-meta{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-bottom:8px;
-  }
-  .lesson-pill{
-    padding:2px 8px;
-    background:rgba(0,0,0,0.25);
-    border-radius:50px;
-    font-family:'DM Mono',monospace;
-    font-size:9px;
-    color:var(--paper);
-    letter-spacing:0.15em;
-    text-transform:uppercase;
-  }
-  .lesson-eyebrow{
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    color:rgba(255,255,255,0.85);
-    letter-spacing:0.18em;
-    text-transform:uppercase;
-  }
-  .lesson-title{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:26px;
-    color:var(--paper);
-    line-height:1.05;
-    margin-bottom:6px;
-    text-shadow:0 1px 2px rgba(0,0,0,0.3);
-  }
-  .lesson-sub{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-size:13px;
-    color:rgba(255,255,255,0.92);
-    margin-bottom:14px;
-    line-height:1.35;
-  }
-  .lesson-cta{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    padding:9px 16px;
-    background:var(--paper);
-    color:var(--ink);
-    border-radius:50px;
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:14px;
-    border:none;
-    cursor:pointer;
-    box-shadow:0 3px 0 var(--rojo-deep);
-    position:relative;
-    z-index:2;
-  }
-
-  /* PROGRESS RING (today's goal) */
-  .goal-row{
-    margin-top:14px;
-    background:rgba(243,232,207,0.04);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:12px 14px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
-  .goal-ring{
-    width:42px;height:42px;
-    flex-shrink:0;
-    position:relative;
-  }
-  .goal-ring svg{transform:rotate(-90deg)}
-  .goal-ring-text{
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:'DM Mono',monospace;
-    font-size:11px;
-    font-weight:500;
-    color:var(--amber);
-  }
-  .goal-info{flex:1}
-  .goal-info .ttl{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:700;
-    font-size:14px;
-    color:var(--paper);
-    line-height:1.1;
-  }
-  .goal-info .sub{
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    color:var(--cream);
-    opacity:0.65;
-    letter-spacing:0.05em;
-    margin-top:2px;
-  }
-
-  /* MODULE PROGRESS LIST */
-  .section-label{
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    letter-spacing:0.28em;
-    color:var(--amber);
-    text-transform:uppercase;
-    margin-top:20px;
-    margin-bottom:10px;
-    opacity:0.95;
-  }
-  .module-list{display:flex;flex-direction:column;gap:8px}
-  .module-row{
-    background:rgba(243,232,207,0.04);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:12px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    cursor:pointer;
-    transition:all 0.15s;
-  }
-  .module-row:active{transform:scale(0.98);background:rgba(243,232,207,0.07)}
-  .module-row.locked{opacity:0.45}
-  .module-num{
-    width:34px;height:34px;
-    border-radius:50%;
-    background:var(--teal-deep);
-    border:1.5px solid var(--teal);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:14px;
-    color:var(--paper);
-    flex-shrink:0;
-  }
-  .module-row.completed .module-num{background:var(--green-deep);border-color:var(--green);color:var(--paper)}
-  .module-row.current .module-num{background:var(--rojo-deep);border-color:var(--rojo)}
-  .module-row.locked .module-num{background:transparent;border-color:var(--line);color:var(--cream)}
-  .module-info{flex:1;min-width:0}
-  .module-name{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:700;
-    font-size:14px;
-    color:var(--paper);
-    line-height:1.1;
-  }
-  .module-name small{
-    display:block;
-    font-family:'DM Mono',monospace;
-    font-style:normal;
-    font-size:9px;
-    letter-spacing:0.12em;
-    color:var(--cream);
-    opacity:0.55;
-    text-transform:uppercase;
-    margin-top:3px;
-  }
-  .module-progress{
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    color:var(--amber);
-    flex-shrink:0;
-  }
-
-  /* SCREEN: PRACTICE / LESSON */
-  .lesson-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:18px;
-  }
-  .back-btn{
-    width:34px;height:34px;
-    background:transparent;
-    border:1px solid var(--line);
-    border-radius:50%;
-    color:var(--paper);
-    font-size:14px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .back-btn:active{background:rgba(243,232,207,0.06)}
-  .lesson-progress-bar{
-    flex:1;
-    margin:0 12px;
-    height:5px;
-    background:var(--line);
-    border-radius:3px;
-    overflow:hidden;
-  }
-  .lesson-progress-fill{
-    height:100%;
-    width:35%;
-    background:linear-gradient(90deg, var(--rojo), var(--amber));
-    border-radius:3px;
-    transition:width 0.4s;
-  }
-  .lesson-progress-pct{
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    color:var(--amber);
-    letter-spacing:0.1em;
-    flex-shrink:0;
-  }
-
-  .practice-step-label{
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    letter-spacing:0.25em;
-    color:var(--amber);
-    text-transform:uppercase;
-    margin-bottom:6px;
-  }
-  .practice-title{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:28px;
-    color:var(--paper);
-    line-height:1.05;
-    margin-bottom:8px;
-  }
-  .practice-title em{color:var(--amber)}
-  .practice-sub{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-size:14px;
-    color:var(--cream);
-    opacity:0.85;
-    margin-bottom:24px;
-    line-height:1.4;
-  }
-
-  /* CLAVE GRID PRACTICE VIEW */
-  .clave-stage{
-    background:linear-gradient(180deg, var(--ink-2), var(--ink-3));
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:18px 14px;
-    margin-bottom:14px;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-  .stage-label{
-    font-family:'DM Mono',monospace;
-    font-size:9px;
-    letter-spacing:0.25em;
-    color:var(--amber);
-    text-transform:uppercase;
-    margin-bottom:10px;
-    text-align:center;
-    opacity:0.85;
-  }
-  .clave-vis{
-    display:grid;
-    grid-template-columns:repeat(16,1fr);
-    gap:3px;
-  }
-  .cv-cell{
-    aspect-ratio:1;
-    border-radius:4px;
-    background:rgba(243,232,207,0.08);
-    border:1px solid var(--line-soft);
-    transition:all 0.1s;
-  }
-  .cv-cell.hit{background:var(--gold);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.2)}
-  .cv-cell.now{
-    box-shadow:inset 0 0 0 2px var(--paper), 0 0 8px rgba(243,232,207,0.45);
-  }
-  .clave-count{
-    display:grid;
-    grid-template-columns:repeat(16,1fr);
-    gap:3px;
-    margin-top:6px;
-  }
-  .cc-num{
-    font-family:'DM Mono',monospace;
-    font-size:8px;
-    text-align:center;
-    color:var(--cream);
-    opacity:0.4;
-  }
-  .cc-num.beat{opacity:0.85;color:var(--amber)}
-
-  /* MIC LISTENING */
-  .mic-section{
-    background:linear-gradient(180deg, var(--ink-2), var(--ink-3));
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:16px;
-    margin-bottom:14px;
-    text-align:center;
-  }
-  .mic-circle{
-    width:120px;
-    height:120px;
-    margin:8px auto 12px;
-    border-radius:50%;
-    background:radial-gradient(circle at 30% 30%, var(--rojo), var(--rojo-deep));
-    border:3px solid var(--amber);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:48px;
-    color:var(--paper);
-    cursor:pointer;
-    box-shadow:0 4px 0 var(--rojo-deep), 0 8px 20px rgba(0,0,0,0.5);
-    position:relative;
-    transition:transform 0.1s;
-  }
-  .mic-circle:active{transform:translateY(3px);box-shadow:0 1px 0 var(--rojo-deep), 0 4px 12px rgba(0,0,0,0.5)}
-  .mic-circle.listening{
-    background:radial-gradient(circle at 30% 30%, var(--green), var(--green-deep));
-    animation:micPulse 1s ease-in-out infinite;
-  }
-  @keyframes micPulse{
-    0%,100%{box-shadow:0 4px 0 var(--green-deep), 0 0 0 0 rgba(93,139,84,0.5)}
-    50%{box-shadow:0 4px 0 var(--green-deep), 0 0 0 16px rgba(93,139,84,0)}
-  }
-  .mic-status{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:700;
-    font-size:14px;
-    color:var(--paper);
-    margin-bottom:2px;
-  }
-  .mic-status em{color:var(--amber)}
-  .mic-hint{
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    color:var(--cream);
-    opacity:0.6;
-    letter-spacing:0.05em;
-  }
-
-  /* GRADE BAR */
-  .grade-track{
-    margin-top:12px;
-    height:32px;
-    background:rgba(243,232,207,0.05);
-    border:1px solid var(--line);
-    border-radius:16px;
-    position:relative;
-    overflow:hidden;
-  }
-  .grade-marker{
-    position:absolute;
-    top:0;
-    height:100%;
-    width:3px;
-    background:var(--amber);
-    box-shadow:0 0 8px var(--amber);
-    transition:left 0.15s;
-  }
-  .grade-zone{
-    position:absolute;
-    top:0;height:100%;
-    left:42%;right:42%;
-    background:rgba(93,139,84,0.18);
-    border-left:1px dashed var(--green);
-    border-right:1px dashed var(--green);
-  }
-  .grade-labels{
-    display:flex;
-    justify-content:space-between;
-    margin-top:6px;
-    font-family:'DM Mono',monospace;
-    font-size:9px;
-    color:var(--cream);
-    opacity:0.6;
-    letter-spacing:0.1em;
-  }
-  .grade-labels span:nth-child(2){color:var(--green);opacity:1}
-
-  /* BIG ACTION BUTTON */
-  .big-action{
-    margin-top:auto;
-    padding:15px 20px;
-    background:radial-gradient(circle at 30% 30%, var(--rojo), var(--rojo-deep));
-    color:var(--paper);
-    border:2px solid var(--amber);
-    border-radius:50px;
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:17px;
-    cursor:pointer;
-    box-shadow:0 4px 0 var(--rojo-deep), 0 8px 18px rgba(0,0,0,0.4);
-    transition:transform 0.08s;
-  }
-  .big-action:active{transform:translateY(3px);box-shadow:0 1px 0 var(--rojo-deep), 0 4px 10px rgba(0,0,0,0.4)}
-  .big-action.success{background:radial-gradient(circle at 30% 30%, var(--green), var(--green-deep));border-color:var(--paper)}
-
-  /* SCREEN: PROGRESS / MAP */
-  .progress-stat-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-bottom:18px;
-  }
-  .stat-card{
-    background:linear-gradient(155deg, var(--ink-2), var(--ink-3));
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:14px;
-  }
-  .stat-card.featured{
-    background:linear-gradient(155deg, var(--teal-deep), var(--teal));
-    border-color:var(--teal);
-  }
-  .stat-num{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:32px;
-    color:var(--paper);
-    line-height:1;
-  }
-  .stat-num small{
-    font-size:14px;
-    font-weight:500;
-    color:var(--cream);
-    opacity:0.7;
-    margin-left:3px;
-  }
-  .stat-label{
-    font-family:'DM Mono',monospace;
-    font-size:9px;
-    letter-spacing:0.18em;
-    color:var(--amber);
-    text-transform:uppercase;
-    margin-top:4px;
-  }
-  .stat-card.featured .stat-label{color:var(--paper);opacity:0.85}
-
-  .streak-cal{
-    background:rgba(243,232,207,0.04);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:14px;
-    margin-bottom:14px;
-  }
-  .streak-cal-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    margin-bottom:10px;
-  }
-  .streak-cal-head .ttl{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:700;
-    font-size:14px;
-    color:var(--paper);
-  }
-  .streak-cal-head .sub{
-    font-family:'DM Mono',monospace;
-    font-size:9px;
-    letter-spacing:0.12em;
-    color:var(--amber);
-  }
-  .streak-grid{
-    display:grid;
-    grid-template-columns:repeat(7,1fr);
-    gap:5px;
-  }
-  .streak-day{
-    aspect-ratio:1;
-    border-radius:5px;
-    background:rgba(243,232,207,0.06);
-    border:1px solid var(--line-soft);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:'DM Mono',monospace;
-    font-size:9px;
-    color:var(--cream);
-    opacity:0.5;
-  }
-  .streak-day.done{
-    background:var(--rojo);
-    color:var(--paper);
-    opacity:1;
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,0.2);
-  }
-  .streak-day.today{
-    background:var(--amber);
-    color:var(--ink);
-    opacity:1;
-    font-weight:700;
-    box-shadow:0 0 8px rgba(241,168,58,0.5);
-  }
-
-  .skill-row{
-    background:rgba(243,232,207,0.04);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:12px 14px;
-    margin-bottom:8px;
-  }
-  .skill-row-head{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:6px;
-  }
-  .skill-name{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:700;
-    font-size:13px;
-    color:var(--paper);
-  }
-  .skill-pct{
-    font-family:'DM Mono',monospace;
-    font-size:11px;
-    color:var(--amber);
-  }
-  .skill-bar{
-    height:6px;
-    background:var(--line);
-    border-radius:3px;
-    overflow:hidden;
-  }
-  .skill-bar-fill{
-    height:100%;
-    background:linear-gradient(90deg, var(--rojo), var(--amber));
-    border-radius:3px;
-  }
-
-  /* SCREEN: SETTINGS / LANGUAGE */
-  .settings-row{
-    background:rgba(243,232,207,0.04);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:14px;
-    margin-bottom:8px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    cursor:pointer;
-  }
-  .settings-row:active{background:rgba(243,232,207,0.07)}
-  .settings-label{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:700;
-    font-size:14px;
-    color:var(--paper);
-  }
-  .settings-value{
-    font-family:'DM Mono',monospace;
-    font-size:11px;
-    color:var(--amber);
-    letter-spacing:0.05em;
-  }
-  .lang-toggle{
-    display:flex;
-    background:var(--ink-3);
-    border:1px solid var(--line);
-    border-radius:50px;
-    padding:3px;
-    gap:0;
-  }
-  .lang-opt{
-    padding:5px 12px;
-    border-radius:50px;
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    letter-spacing:0.1em;
-    color:var(--cream);
-    opacity:0.55;
-    cursor:pointer;
-    transition:all 0.15s;
-    text-transform:uppercase;
-    border:none;
-    background:transparent;
-  }
-  .lang-opt.active{
-    background:var(--amber);
-    color:var(--ink);
-    opacity:1;
-    font-weight:600;
-  }
-
-  /* SCREEN INDICATOR (presentation aid) */
-  .screen-indicator{
-    max-width:1100px;
-    margin:24px auto 0;
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-  .si-btn{
-    padding:8px 16px;
-    background:transparent;
-    border:1px solid var(--line);
-    border-radius:50px;
-    color:var(--cream);
-    font-family:'DM Mono',monospace;
-    font-size:11px;
-    letter-spacing:0.15em;
-    text-transform:uppercase;
-    cursor:pointer;
-    transition:all 0.15s;
-  }
-  .si-btn:hover{border-color:var(--amber);color:var(--amber)}
-  .si-btn.active{border-color:var(--amber);background:rgba(241,168,58,0.15);color:var(--amber)}
-
-  /* FOOTER */
-  .pres-footer{
-    max-width:1100px;
-    margin:30px auto 0;
-    padding-top:20px;
-    border-top:1px dashed var(--line);
-    text-align:center;
-    font-family:'DM Mono',monospace;
-    font-size:10px;
-    letter-spacing:0.22em;
-    color:var(--cream);
-    opacity:0.5;
-    text-transform:uppercase;
-  }
-  .pres-footer em{color:var(--amber);font-style:normal}
-
-  /* AUDIO PROMPT */
-  .audio-prompt{
-    position:absolute;
-    inset:14px;
-    border-radius:32px;
-    background:rgba(12,26,38,0.95);
-    backdrop-filter:blur(8px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:20;
-    cursor:pointer;
-  }
-  .audio-prompt.hidden{display:none}
-  .audio-prompt-inner{
-    text-align:center;
-    padding:20px;
-  }
-  .audio-prompt h3{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:30px;
-    color:var(--amber);
-    margin-bottom:6px;
-  }
-  .audio-prompt p{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-size:13px;
-    color:var(--cream);
-    margin-bottom:18px;
-    line-height:1.4;
-  }
-  .audio-start{
-    padding:11px 24px;
-    background:var(--rojo);
-    color:var(--paper);
-    border:2px solid var(--amber);
-    border-radius:50px;
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:16px;
-    cursor:pointer;
-    box-shadow:0 3px 0 var(--rojo-deep);
-  }
-
-  /* CELEBRATION OVERLAY */
-  .celebrate{
-    position:absolute;
-    inset:14px;
-    border-radius:32px;
-    background:rgba(12,26,38,0.95);
-    backdrop-filter:blur(8px);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:15;
-    flex-direction:column;
-    padding:30px;
-    text-align:center;
-  }
-  .celebrate.show{display:flex;animation:celebrateIn 0.4s ease}
-  @keyframes celebrateIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
-  .celebrate-emoji{
-    font-size:64px;
-    margin-bottom:12px;
-    animation:bounce 0.5s ease;
-  }
-  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-  .celebrate h2{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-weight:900;
-    font-size:36px;
-    color:var(--amber);
-    text-shadow:0 2px 0 var(--rojo-deep);
-    margin-bottom:6px;
-    line-height:1;
-  }
-  .celebrate p{
-    font-family:'Fraunces',serif;
-    font-style:italic;
-    font-size:15px;
-    color:var(--cream);
-    margin-bottom:20px;
-  }
-  .celebrate .stat-line{
-    font-family:'DM Mono',monospace;
-    font-size:11px;
-    color:var(--amber);
-    letter-spacing:0.2em;
-    text-transform:uppercase;
-    margin-bottom:24px;
-  }
-
-  /* MOBILE adjustments */
-  @media (max-width:980px){
-    .stage{grid-template-columns:1fr;gap:24px}
-    .stage-side{padding-top:0;text-align:center;max-width:480px;margin:0 auto}
-    .stage-side ul{text-align:left}
+    width:100%;max-width:400px;height:min(820px,calc(100vh - 36px));
+    background:var(--paper);border-radius:34px;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.45), 0 0 0 10px #0E1826, 0 0 0 12px #31435C;
+    display:flex;flex-direction:column;position:relative;
   }
   @media (max-width:440px){
-    .phone{width:100%;max-width:380px;height:auto;aspect-ratio:380/780}
+    body{padding:0;background:var(--paper)}
+    .phone{max-width:none;height:100vh;height:100dvh;border-radius:0;box-shadow:none}
+  }
+  /* drafting-paper grid on app background */
+  .phone::before{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:
+      linear-gradient(to right, rgba(22,56,111,.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(22,56,111,.045) 1px, transparent 1px);
+    background-size:22px 22px;
+  }
+
+  /* header */
+  header{
+    position:relative;z-index:2;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 20px 12px;
+  }
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo-mark{
+    width:38px;height:38px;border-radius:9px;background:var(--blue-deep);
+    display:grid;place-items:center;flex:none;
+  }
+  .logo-mark svg{display:block}
+  .logo-type{font-family:'Big Shoulders Display';font-weight:800;font-size:24px;letter-spacing:.04em;line-height:1;color:var(--blue-deep)}
+  .logo-sub{font-size:10.5px;color:var(--ink-soft);letter-spacing:.02em;margin-top:2px}
+  .lang{
+    font-family:'IBM Plex Mono';font-size:12px;font-weight:500;
+    border:1.5px solid var(--blue-deep);border-radius:999px;background:var(--card);
+    color:var(--blue-deep);padding:6px 12px;cursor:pointer;
+  }
+  .lang:focus-visible,button:focus-visible,.module:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+
+  main{position:relative;z-index:1;flex:1;overflow-y:auto;padding:6px 20px 28px;scrollbar-width:none}
+  main::-webkit-scrollbar{display:none}
+  .screen{display:none;animation:fade .25s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .screen,.feedback,.shake{animation:none !important}
+  }
+
+  /* ---------- HOME ---------- */
+  .hero{
+    background:var(--blue-deep);border-radius:var(--radius);
+    padding:18px 18px 16px;color:var(--blue-line);position:relative;overflow:hidden;
+    margin-bottom:18px;
+  }
+  .hero::after{ /* faint drafting lines */
+    content:"";position:absolute;inset:0;opacity:.16;pointer-events:none;
+    background-image:
+      linear-gradient(to right, var(--blue-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--blue-line) 1px, transparent 1px);
+    background-size:26px 26px;
+  }
+  .hero h1{font-family:'Big Shoulders Display';font-weight:800;font-size:26px;letter-spacing:.03em;color:#fff;line-height:1.05;position:relative}
+  .hero p{font-size:13px;margin-top:6px;position:relative;color:var(--blue-dim)}
+  .hero .stat-row{display:flex;gap:14px;margin-top:14px;position:relative}
+  .stat{background:rgba(255,255,255,.08);border:1px solid rgba(221,233,251,.25);border-radius:10px;padding:8px 12px;flex:1}
+  .stat b{font-family:'IBM Plex Mono';font-size:17px;color:#fff;display:block}
+  .stat span{font-size:10.5px;color:var(--blue-dim)}
+
+  .section-label{
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.12em;
+    color:var(--ink-soft);text-transform:uppercase;margin:0 0 10px 2px;
+  }
+  .module{
+    width:100%;text-align:left;display:flex;align-items:center;gap:14px;
+    background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
+    padding:14px;margin-bottom:10px;cursor:pointer;font-family:inherit;
+  }
+  .module.active{border-color:var(--orange)}
+  .module .m-num{
+    font-family:'IBM Plex Mono';font-size:12px;color:var(--blue-deep);
+    width:44px;height:44px;flex:none;border:1.5px dashed var(--blue-dim);
+    border-radius:10px;display:grid;place-items:center;background:var(--paper);
+  }
+  .module.active .m-num{border-style:solid;border-color:var(--orange);color:var(--orange-dark);font-weight:500}
+  .module h3{font-size:14.5px;font-weight:600}
+  .module p{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .module .m-body{flex:1;min-width:0}
+  .module .m-cta{
+    font-family:'IBM Plex Mono';font-size:11px;flex:none;
+    color:var(--orange-dark);font-weight:500;
+  }
+  .module.locked{opacity:.55;cursor:default}
+  .module.locked .m-cta{color:var(--ink-soft)}
+  .progress-track{height:5px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden}
+  .progress-fill{height:100%;width:20%;background:var(--orange);border-radius:99px}
+
+  /* ---------- LESSON ---------- */
+  .lesson-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .back-btn{
+    border:1.5px solid var(--line);background:var(--card);border-radius:10px;
+    width:36px;height:36px;font-size:16px;cursor:pointer;color:var(--ink);flex:none;
+  }
+  .dots{display:flex;gap:6px;flex:1;justify-content:center}
+  .dot{width:26px;height:6px;border-radius:99px;background:var(--line)}
+  .dot.done{background:var(--green)}
+  .dot.wrong{background:var(--red)}
+  .dot.now{background:var(--orange)}
+  .q-count{font-family:'IBM Plex Mono';font-size:12px;color:var(--ink-soft);flex:none}
+
+  .q-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+  .q-tag{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.1em;color:var(--orange-dark);text-transform:uppercase}
+  .q-text{font-size:16px;font-weight:600;margin-top:6px;line-height:1.35}
+
+  .plan-wrap{
+    border-radius:var(--radius);overflow:hidden;background:var(--blue-deep);
+    border:1.5px solid #0F2A57;box-shadow:inset 0 0 40px rgba(0,0,0,.25);
+  }
+  .plan-wrap svg{display:block;width:100%;height:auto}
+  .hotspot{fill:transparent;cursor:pointer}
+  .hotspot.correct-flash{fill:rgba(28,158,90,.35)}
+  .hotspot.wrong-flash{fill:rgba(214,64,46,.35)}
+  .plan-hint{
+    font-family:'IBM Plex Mono';font-size:11px;color:var(--ink-soft);
+    text-align:center;margin-top:8px;
+  }
+  .shake{animation:shake .3s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  .choices{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+  .choice{
+    text-align:left;background:var(--card);border:1.5px solid var(--line);
+    border-radius:12px;padding:13px 14px;font-size:14.5px;font-family:inherit;
+    cursor:pointer;display:flex;align-items:center;gap:10px;color:var(--ink);
+  }
+  .choice .key{
+    font-family:'IBM Plex Mono';font-size:11px;color:var(--ink-soft);
+    border:1px solid var(--line);border-radius:6px;padding:2px 7px;flex:none;
+  }
+  .choice.correct{border-color:var(--green);background:#EDF9F2}
+  .choice.wrong{border-color:var(--red);background:#FCEFED}
+  .choice:disabled{cursor:default}
+  .symbol-preview{
+    background:var(--blue-deep);border-radius:12px;padding:10px;
+    display:grid;place-items:center;margin-bottom:12px;border:1.5px solid #0F2A57;
+  }
+
+  .feedback{
+    margin-top:14px;border-radius:var(--radius);padding:14px 15px;
+    display:none;animation:fade .25s ease;
+  }
+  .feedback.show{display:block}
+  .feedback.good{background:#EDF9F2;border:1.5px solid var(--green)}
+  .feedback.bad{background:#FCEFED;border:1.5px solid var(--red)}
+  .feedback h4{font-size:13.5px;display:flex;align-items:center;gap:7px}
+  .feedback.good h4{color:var(--green)}
+  .feedback.bad h4{color:var(--red)}
+  .feedback p{font-size:13px;color:var(--ink);margin-top:6px;line-height:1.45}
+  .btn{
+    width:100%;border:none;border-radius:12px;padding:14px;margin-top:12px;
+    font-family:'IBM Plex Sans';font-size:15px;font-weight:600;cursor:pointer;
+    background:var(--orange);color:#fff;box-shadow:0 3px 0 var(--orange-dark);
+  }
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--orange-dark)}
+  .btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+
+  /* ---------- RESULTS ---------- */
+  .result-card{
+    background:var(--blue-deep);border-radius:var(--radius);padding:26px 20px;
+    text-align:center;color:#fff;position:relative;overflow:hidden;margin-top:8px;
+  }
+  .result-card::after{
+    content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+    background-image:
+      linear-gradient(to right, var(--blue-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--blue-line) 1px, transparent 1px);
+    background-size:26px 26px;
+  }
+  .score{font-family:'IBM Plex Mono';font-size:44px;font-weight:500;position:relative}
+  .score small{font-size:18px;color:var(--blue-dim)}
+  .result-card h2{font-family:'Big Shoulders Display';font-weight:800;font-size:24px;letter-spacing:.03em;margin-top:6px;position:relative}
+  .result-card p{font-size:13px;color:var(--blue-dim);margin-top:6px;position:relative}
+  .stamp{
+    position:relative;display:inline-block;margin-top:16px;
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.14em;
+    border:2px solid var(--orange);color:var(--orange);
+    padding:6px 14px;border-radius:6px;transform:rotate(-4deg);text-transform:uppercase;
   }
 </style>
 </head>
 <body>
-
-<header class="pres-header">
-  <div class="pres-eyebrow">Maqueta Interactiva &nbsp;·&nbsp; Para mi primo</div>
-  <h1 class="pres-title">Esto es <em>ClaveLab</em>.</h1>
-  <p class="pres-sub">Toca los botones de abajo para recorrer las pantallas. El audio funciona de verdad.</p>
-</header>
-
-<div class="stage">
-
-  <!-- LEFT NOTES -->
-  <aside class="stage-side">
-    <h3 id="leftTitle">El <em>ritual diario</em></h3>
-    <p id="leftBody">Abres la app. Ves la lección del día. Cinco minutos. Una racha clara. El punto no es la app — es el hábito diario que crea.</p>
-    <ul id="leftList">
-      <li>La racha bien visible — retención al estilo Duolingo</li>
-      <li>La tarjeta de la lección del día es la acción principal — sin decisiones que tomar</li>
-      <li>Los módulos se desbloquean en orden — progresión clara</li>
-      <li>Encabezados bilingües (español + inglés) desde el día uno</li>
-    </ul>
-    <div class="note" id="leftNote">
-      Por qué funciona: los bailadores no quieren una "app de teoría musical." Quieren un ritual diario de 5 minutos que tranquilamente se convierte en habilidad real en unos meses.
+<div class="phone">
+  <header>
+    <div class="logo">
+      <div class="logo-mark">
+        <!-- section-cut mark as logo -->
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="8.5" stroke="#DDE9FB" stroke-width="1.6"/>
+          <line x1="11" y1="2.5" x2="11" y2="19.5" stroke="#FF6B1A" stroke-width="1.6"/>
+          <path d="M11 2.5 L14 6 H8 Z" fill="#FF6B1A"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-type">EL PLANO</div>
+        <div class="logo-sub" data-i18n="tagline">Aprende a leer planos de obra</div>
+      </div>
     </div>
-  </aside>
+    <button class="lang" id="langBtn" aria-label="Switch language">EN</button>
+  </header>
 
-  <!-- PHONE -->
-  <div class="phone">
-    <div class="phone-screen">
+  <main id="main">
 
-      <!-- Decorative status bar -->
-      <div class="status-bar">
-        <span>9:24</span>
-        <div class="status-right">
-          <span>●●●●</span>
-          <span>87%</span>
+    <!-- ============ HOME ============ -->
+    <section class="screen active" id="home">
+      <div class="hero">
+        <h1 data-i18n="heroTitle">De ayudante a maestro de obra</h1>
+        <p data-i18n="heroSub">Domina los planos que ves todos los días en la obra. 5 minutos al día.</p>
+        <div class="stat-row">
+          <div class="stat"><b>3</b><span data-i18n="statStreak">días seguidos</span></div>
+          <div class="stat"><b>12</b><span data-i18n="statSymbols">símbolos dominados</span></div>
+          <div class="stat"><b>1/5</b><span data-i18n="statModules">módulos</span></div>
         </div>
       </div>
 
-      <!-- Audio prompt -->
-      <div class="audio-prompt" id="audioPrompt">
-        <div class="audio-prompt-inner">
-          <h3>¡Empieza!</h3>
-          <p>Toca para activar el audio y que los ritmos suenen de verdad.</p>
-          <button class="audio-start" id="audioStart">Comenzar la demo</button>
+      <p class="section-label" data-i18n="modulesLabel">Módulos del curso</p>
+
+      <button class="module active" onclick="startLesson()">
+        <div class="m-num">M-01</div>
+        <div class="m-body">
+          <h3 data-i18n="m1t">Símbolos básicos</h3>
+          <p data-i18n="m1s">Puertas, ventanas, muros, cortes y cotas</p>
+          <div class="progress-track"><div class="progress-fill"></div></div>
         </div>
+        <div class="m-cta" data-i18n="continue">SEGUIR ›</div>
+      </button>
+
+      <button class="module locked" tabindex="-1">
+        <div class="m-num">M-02</div>
+        <div class="m-body">
+          <h3 data-i18n="m2t">Cortes y secciones</h3>
+          <p data-i18n="m2s">Cómo se lee un corte A-A y una elevación</p>
+        </div>
+        <div class="m-cta">🔒</div>
+      </button>
+
+      <button class="module locked" tabindex="-1">
+        <div class="m-num">M-03</div>
+        <div class="m-body">
+          <h3 data-i18n="m3t">Cotas y escalas</h3>
+          <p data-i18n="m3s">Medidas reales a partir del plano</p>
+        </div>
+        <div class="m-cta">🔒</div>
+      </button>
+
+      <button class="module locked" tabindex="-1">
+        <div class="m-num">M-04</div>
+        <div class="m-body">
+          <h3 data-i18n="m4t">Plano eléctrico</h3>
+          <p data-i18n="m4s">Contactos, apagadores y circuitos</p>
+        </div>
+        <div class="m-cta">🔒</div>
+      </button>
+
+      <button class="module locked" tabindex="-1">
+        <div class="m-num">M-05</div>
+        <div class="m-body">
+          <h3 data-i18n="m5t">Cimentación y estructura</h3>
+          <p data-i18n="m5s">Zapatas, castillos, trabes y armado</p>
+        </div>
+        <div class="m-cta">🔒</div>
+      </button>
+    </section>
+
+    <!-- ============ LESSON ============ -->
+    <section class="screen" id="lesson">
+      <div class="lesson-top">
+        <button class="back-btn" onclick="goHome()" aria-label="Back">←</button>
+        <div class="dots" id="dots"></div>
+        <div class="q-count" id="qCount">1/5</div>
       </div>
 
-      <!-- Celebrate overlay -->
-      <div class="celebrate" id="celebrate">
-        <div class="celebrate-emoji">🎯</div>
-        <h2>¡Muy bien!</h2>
-        <p>Día 13 completo. Dominaste la clave de son 3-2.</p>
-        <div class="stat-line">Racha +1 &nbsp;·&nbsp; Precisión 94%</div>
-        <button class="big-action success" onclick="closeCelebrate()">Continuar</button>
+      <div class="q-card">
+        <div class="q-tag" id="qTag"></div>
+        <div class="q-text" id="qText"></div>
       </div>
 
-      <!-- SCREEN 1: HOME -->
-      <div class="screen active" data-screen="home">
-        <div class="home-header">
-          <div class="greeting-row">
-            <span class="greeting">¡Hola, bailador!</span>
-            <div class="streak-badge">🔥 Racha de 12 días</div>
-          </div>
-          <h1 class="home-title">Práctica de <em>hoy</em>.</h1>
-          <div class="home-date">Martes · 5 min</div>
-        </div>
+      <div id="qBody"></div>
 
-        <!-- Big lesson card -->
-        <div class="lesson-card" onclick="showScreen('practice')">
-          <div class="lesson-meta">
-            <span class="lesson-pill">Módulo 1</span>
-            <span class="lesson-eyebrow">Lección 4 de 8</span>
-          </div>
-          <div class="lesson-title">Encuentra el lado del 3.</div>
-          <div class="lesson-sub">Escucha la diferencia entre la clave de son 3-2 y 2-3.</div>
-          <button class="lesson-cta">▶ Empezar · 5 min</button>
-        </div>
-
-        <!-- Daily goal -->
-        <div class="goal-row">
-          <div class="goal-ring">
-            <svg viewBox="0 0 42 42" width="42" height="42">
-              <circle cx="21" cy="21" r="17" fill="none" stroke="rgba(243,232,207,0.1)" stroke-width="4"/>
-              <circle cx="21" cy="21" r="17" fill="none" stroke="var(--amber)" stroke-width="4" stroke-linecap="round" stroke-dasharray="107" stroke-dashoffset="40"/>
-            </svg>
-            <div class="goal-ring-text">63%</div>
-          </div>
-          <div class="goal-info">
-            <div class="ttl">Meta diaria</div>
-            <div class="sub">3 min hechos · faltan 2</div>
-          </div>
-        </div>
-
-        <!-- Modules -->
-        <div class="section-label">Tu camino</div>
-        <div class="module-list">
-          <div class="module-row current" onclick="showScreen('practice')">
-            <div class="module-num">1</div>
-            <div class="module-info">
-              <div class="module-name">Escuchar la clave<small>Módulo de fundación</small></div>
-            </div>
-            <div class="module-progress">4 / 8</div>
-          </div>
-          <div class="module-row locked">
-            <div class="module-num">2</div>
-            <div class="module-info">
-              <div class="module-name">Cambio 3-2 a 2-3<small>El giro de la clave</small></div>
-            </div>
-            <div class="module-progress">🔒</div>
-          </div>
-          <div class="module-row locked">
-            <div class="module-num">3</div>
-            <div class="module-info">
-              <div class="module-name">La cáscara<small>Capa de timbal</small></div>
-            </div>
-            <div class="module-progress">🔒</div>
-          </div>
-          <div class="module-row locked">
-            <div class="module-num">4</div>
-            <div class="module-info">
-              <div class="module-name">La campana<small>El cencerro</small></div>
-            </div>
-            <div class="module-progress">🔒</div>
-          </div>
-        </div>
+      <div class="feedback" id="feedback">
+        <h4 id="fbTitle"></h4>
+        <p id="fbText"></p>
+        <button class="btn" id="nextBtn" onclick="nextQuestion()"></button>
       </div>
+    </section>
 
-      <!-- SCREEN 2: PRACTICE -->
-      <div class="screen" data-screen="practice">
-        <div class="lesson-header">
-          <button class="back-btn" onclick="showScreen('home')">←</button>
-          <div class="lesson-progress-bar">
-            <div class="lesson-progress-fill" id="lessonProgFill"></div>
-          </div>
-          <span class="lesson-progress-pct">2/4</span>
-        </div>
-
-        <div class="practice-step-label">Paso 2 · Escucha y toca</div>
-        <h1 class="practice-title">Toca el <em>lado del 3</em>.</h1>
-        <p class="practice-sub">Escucha primero. Cuando estés listo, toca el mic y aplaude con el ritmo.</p>
-
-        <!-- Clave visualization -->
-        <div class="clave-stage">
-          <div class="stage-label">Clave de Son 3-2 · 96 BPM</div>
-          <div class="clave-vis" id="claveVis"></div>
-          <div class="clave-count">
-            <div class="cc-num beat">1</div><div class="cc-num">·</div>
-            <div class="cc-num">·</div><div class="cc-num">·</div>
-            <div class="cc-num beat">2</div><div class="cc-num">·</div>
-            <div class="cc-num">·</div><div class="cc-num">·</div>
-            <div class="cc-num beat">3</div><div class="cc-num">·</div>
-            <div class="cc-num">·</div><div class="cc-num">·</div>
-            <div class="cc-num beat">4</div><div class="cc-num">·</div>
-            <div class="cc-num">·</div><div class="cc-num">·</div>
-          </div>
-        </div>
-
-        <!-- Mic -->
-        <div class="mic-section">
-          <div class="mic-circle" id="micCircle" onclick="toggleMic()">🎤</div>
-          <div class="mic-status" id="micStatus">Toca el mic para <em>empezar</em></div>
-          <div class="mic-hint" id="micHint">Toca, aplaude o golpea el teléfono con los dedos</div>
-
-          <!-- Grade bar -->
-          <div class="grade-track" style="display:none" id="gradeTrack">
-            <div class="grade-zone"></div>
-            <div class="grade-marker" id="gradeMarker" style="left:50%"></div>
-          </div>
-          <div class="grade-labels" style="display:none" id="gradeLabels">
-            <span>Adelantado</span>
-            <span>En el tiempo</span>
-            <span>Atrasado</span>
-          </div>
-        </div>
-
-        <button class="big-action" onclick="completeLesson()">Ya lo tengo · Continuar</button>
+    <!-- ============ RESULTS ============ -->
+    <section class="screen" id="results">
+      <div class="result-card">
+        <div class="score"><span id="scoreNum">0</span><small>/5</small></div>
+        <h2 id="resTitle"></h2>
+        <p id="resSub"></p>
+        <div class="stamp" data-i18n="stamp">Lección aprobada</div>
       </div>
+      <button class="btn" onclick="startLesson()" data-i18n="retry">Repetir lección</button>
+      <button class="btn ghost" onclick="goHome()" data-i18n="backHome">Volver a los módulos</button>
+    </section>
 
-      <!-- SCREEN 3: PROGRESS -->
-      <div class="screen" data-screen="progress">
-        <h1 class="home-title" style="margin-bottom:18px">Tu <em>progreso</em>.</h1>
-
-        <div class="progress-stat-grid">
-          <div class="stat-card featured">
-            <div class="stat-num">12<small>días</small></div>
-            <div class="stat-label">Racha actual</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">23<small>min</small></div>
-            <div class="stat-label">Esta semana</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">87<small>%</small></div>
-            <div class="stat-label">Precisión 3-2</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">4<small>/64</small></div>
-            <div class="stat-label">Lecciones hechas</div>
-          </div>
-        </div>
-
-        <!-- Streak calendar -->
-        <div class="streak-cal">
-          <div class="streak-cal-head">
-            <div class="ttl">Últimos 14 días</div>
-            <div class="sub">12 de 14</div>
-          </div>
-          <div class="streak-grid">
-            <div class="streak-day done">L</div>
-            <div class="streak-day done">M</div>
-            <div class="streak-day">X</div>
-            <div class="streak-day done">J</div>
-            <div class="streak-day done">V</div>
-            <div class="streak-day done">S</div>
-            <div class="streak-day done">D</div>
-            <div class="streak-day done">L</div>
-            <div class="streak-day done">M</div>
-            <div class="streak-day done">X</div>
-            <div class="streak-day">J</div>
-            <div class="streak-day done">V</div>
-            <div class="streak-day done">S</div>
-            <div class="streak-day today">D</div>
-          </div>
-        </div>
-
-        <div class="section-label">Habilidades dominadas</div>
-        <div class="skill-row">
-          <div class="skill-row-head">
-            <span class="skill-name">Reconocer clave de son 3-2</span>
-            <span class="skill-pct">87%</span>
-          </div>
-          <div class="skill-bar"><div class="skill-bar-fill" style="width:87%"></div></div>
-        </div>
-        <div class="skill-row">
-          <div class="skill-row-head">
-            <span class="skill-name">Reconocer clave de son 2-3</span>
-            <span class="skill-pct">54%</span>
-          </div>
-          <div class="skill-bar"><div class="skill-bar-fill" style="width:54%"></div></div>
-        </div>
-        <div class="skill-row">
-          <div class="skill-row-head">
-            <span class="skill-name">Aplaudir con el metrónomo</span>
-            <span class="skill-pct">72%</span>
-          </div>
-          <div class="skill-bar"><div class="skill-bar-fill" style="width:72%"></div></div>
-        </div>
-      </div>
-
-      <!-- SCREEN 4: SETTINGS -->
-      <div class="screen" data-screen="settings">
-        <h1 class="home-title" style="margin-bottom:18px"><em>Ajustes</em></h1>
-
-        <div class="settings-row">
-          <span class="settings-label">Idioma</span>
-          <div class="lang-toggle">
-            <button class="lang-opt">EN</button>
-            <button class="lang-opt active">ES</button>
-          </div>
-        </div>
-        <div class="settings-row">
-          <span class="settings-label">Meta diaria</span>
-          <span class="settings-value">5 min · 1 lección</span>
-        </div>
-        <div class="settings-row">
-          <span class="settings-label">Hora del recordatorio</span>
-          <span class="settings-value">8:00 PM</span>
-        </div>
-        <div class="settings-row">
-          <span class="settings-label">Estilo de sonido</span>
-          <span class="settings-value">Claves cubanas</span>
-        </div>
-        <div class="settings-row">
-          <span class="settings-label">Dificultad</span>
-          <span class="settings-value">Principiante</span>
-        </div>
-        <div class="settings-row">
-          <span class="settings-label">Invita a un amigo</span>
-          <span class="settings-value">Gana 1 mes gratis →</span>
-        </div>
-
-        <div class="section-label" style="margin-top:24px">Cuenta</div>
-        <div class="settings-row">
-          <span class="settings-label">Suscripción</span>
-          <span class="settings-value" style="color:var(--green)">Fundador · De por vida</span>
-        </div>
-        <div class="settings-row">
-          <span class="settings-label">Perfil</span>
-          <span class="settings-value">Pablo · LV</span>
-        </div>
-      </div>
-
-      <!-- BOTTOM NAV -->
-      <nav class="bottom-nav">
-        <button class="nav-item active" onclick="showScreen('home')" data-nav="home">
-          <div class="nav-icon">▲</div>
-          <div class="nav-label">Hoy</div>
-        </button>
-        <button class="nav-item" onclick="showScreen('practice')" data-nav="practice">
-          <div class="nav-icon">●</div>
-          <div class="nav-label">Práctica</div>
-        </button>
-        <button class="nav-item" onclick="showScreen('progress')" data-nav="progress">
-          <div class="nav-icon">◆</div>
-          <div class="nav-label">Progreso</div>
-        </button>
-        <button class="nav-item" onclick="showScreen('settings')" data-nav="settings">
-          <div class="nav-icon">⚙</div>
-          <div class="nav-label">Ajustes</div>
-        </button>
-      </nav>
-
-    </div>
-  </div>
-
-  <!-- RIGHT NOTES -->
-  <aside class="stage-side">
-    <h3 id="rightTitle">Qué lo hace <em>diferente</em></h3>
-    <p id="rightBody">Hay muchas apps de música. No hay ninguna que enseñe a un bailador a escuchar la clave de manera diaria y medible — y que califique sus golpes con el micrófono.</p>
-    <ul id="rightList">
-      <li>Práctica calificada por micrófono — la ventaja real</li>
-      <li>Bilingüe ES/EN desde el día uno</li>
-      <li>Hecho para el dolor del bailador, no del percusionista</li>
-      <li>El fundador es cubano + la herencia trae autenticidad</li>
-      <li>Tier pro opcional: licencias para escuelas de baile</li>
-    </ul>
-    <div class="note" id="rightNote">
-      Tu rol: validar que este es el currículo correcto, aparecer en los videos de las lecciones, y (opcionalmente) lanzarlo a tu audiencia. Concreto, definido, y absolutamente crítico para que el producto funcione.
-    </div>
-  </aside>
+  </main>
 </div>
 
-<!-- Screen indicator buttons -->
-<nav class="screen-indicator">
-  <button class="si-btn active" onclick="showScreen('home')" data-si="home">1 · Hoy</button>
-  <button class="si-btn" onclick="showScreen('practice')" data-si="practice">2 · Práctica</button>
-  <button class="si-btn" onclick="showScreen('progress')" data-si="progress">3 · Progreso</button>
-  <button class="si-btn" onclick="showScreen('settings')" data-si="settings">4 · Ajustes</button>
-</nav>
-
-<footer class="pres-footer">
-  ClaveLab <em>·</em> Maqueta <em>·</em> Toca los botones o el teléfono para navegar <em>·</em> El audio funciona
-</footer>
-
 <script>
-'use strict';
-
-/* ============================================================
-   SCREEN ROUTING + NOTES
-   ============================================================ */
-
-const NOTES = {
-  home: {
-    leftTitle: 'El <em>ritual diario</em>',
-    leftBody: "Abres la app. Ves la lección del día. Cinco minutos. Una racha clara. El punto no es la app — es el hábito diario que crea.",
-    leftList: [
-      'La racha bien visible — retención al estilo Duolingo',
-      "La tarjeta de la lección del día es la acción principal — sin decisiones que tomar",
-      'Los módulos se desbloquean en orden — progresión clara',
-      'Encabezados bilingües (español + inglés) desde el día uno'
-    ],
-    leftNote: "Por qué funciona: los bailadores no quieren una 'app de teoría musical.' Quieren un ritual diario de 5 minutos que tranquilamente se convierte en habilidad real en unos meses.",
-    rightTitle: 'Qué lo hace <em>diferente</em>',
-    rightBody: "Hay muchas apps de música. No hay ninguna que enseñe a un bailador a escuchar la clave de manera diaria y medible — y que califique sus golpes con el micrófono.",
-    rightList: [
-      'Práctica calificada por micrófono — la ventaja real',
-      'Bilingüe ES/EN desde el día uno',
-      "Hecho para el dolor del bailador, no del percusionista",
-      'El fundador es cubano + la herencia trae autenticidad',
-      'Tier pro opcional: licencias para escuelas de baile'
-    ],
-    rightNote: "Tu rol como primo: validar que este es el currículo correcto, aparecer en los videos de las lecciones, y (opcionalmente) lanzarlo a tu audiencia. Concreto, definido, y crítico para que el producto funcione."
+/* =============== i18n =============== */
+let lang = 'es';
+const STR = {
+  es:{
+    tagline:'Aprende a leer planos de obra',
+    heroTitle:'De ayudante a maestro de obra',
+    heroSub:'Domina los planos que ves todos los días en la obra. 5 minutos al día.',
+    statStreak:'días seguidos', statSymbols:'símbolos dominados', statModules:'módulos',
+    modulesLabel:'Módulos del curso',
+    m1t:'Símbolos básicos', m1s:'Puertas, ventanas, muros, cortes y cotas',
+    m2t:'Cortes y secciones', m2s:'Cómo se lee un corte A-A y una elevación',
+    m3t:'Cotas y escalas', m3s:'Medidas reales a partir del plano',
+    m4t:'Plano eléctrico', m4s:'Contactos, apagadores y circuitos',
+    m5t:'Cimentación y estructura', m5s:'Zapatas, castillos, trabes y armado',
+    continue:'SEGUIR ›',
+    tapTag:'Toca en el plano', mcTag:'Opción múltiple',
+    planHint:'Toca directamente sobre el dibujo',
+    correct:'✓ Correcto', incorrect:'✗ Casi — mira aquí',
+    next:'Siguiente', finish:'Ver resultado',
+    stamp:'Lección aprobada', retry:'Repetir lección', backHome:'Volver a los módulos',
+    resGood:'¡Ya lees como maestro!', resMid:'Vas bien, sigue así', resLow:'Repite y lo dominas',
+    resSub:'Símbolos básicos · Lección 2 de 5'
   },
-  practice: {
-    leftTitle: 'El <em>flujo de la lección</em>',
-    leftBody: 'Cada lección sigue la misma forma. Escucha, mira el patrón, luego toca con el ritmo — el teléfono escucha por el micrófono y te califica en tiempo real.',
-    leftList: [
-      'La lección tiene 4 pasos — escuchar, mirar, tocar, dominar',
-      'La cuadrícula visual de la clave se ilumina con el audio',
-      'Toca el mic para empezar la calificación',
-      'Zona verde = en el ritmo; la barra muestra adelantado/atrasado',
-      'Sin conteo. Sin notación. Solo escuchar → tocar → ver el resultado'
-    ],
-    leftNote: 'TOCA EL MIC para ver el estado de escucha. Toca "Ya lo tengo" para activar la pantalla de celebración.',
-    rightTitle: '¿Por qué el <em>micrófono</em>?',
-    rightBody: "Esto es la ventaja real. Cualquier otra app de ritmo te hace mirar y aplaudir. Ninguna te califica. Eso es porque la mayoría de apps musicales las hacen ingenieros de audio que no piensan pedagógicamente, y la mayoría de ed-tech la hace gente de currículo que no sabe programar audio.",
-    rightList: [
-      "El teléfono escucha por getUserMedia + detección de golpe",
-      'Califica cada golpe dentro de ~20ms del beat',
-      'Visualiza adelantado/atrasado para que el estudiante VEA qué arreglar',
-      'Sin instrumento — solo el teléfono',
-      'Funciona igual en iOS y Android (con calibración)'
-    ],
-    rightNote: 'Aquí es donde más importa tu aporte: ¿CUÁLES ejercicios atrapan a los estudiantes al nivel correcto? ¿Cuál es el orden correcto?'
-  },
-  progress: {
-    leftTitle: 'Por qué <em>importa el progreso</em>',
-    leftBody: 'El churn de suscripción mata las apps musicales. La historia de retención es la duración del currículo más la mecánica de la racha — ambas visibles aquí todo el tiempo.',
-    leftList: [
-      '4 tarjetas de stats = prueba diaria del progreso a primera vista',
-      'Calendario de 14 días = psicología de protección de la racha',
-      'Barras de habilidad = transparencia en qué realmente mejoraste',
-      'Bonus oculto: esta pantalla también es compartible en redes'
-    ],
-    leftNote: "Una racha de 12 días no son 12 días de uso de app — es un compromiso de 12 días que un estudiante no quiere romper. Esa es la máquina de retención.",
-    rightTitle: 'El momento <em>compartible</em>',
-    rightBody: "Después de hitos de 30/60/90 días, esta pantalla se vuelve digna de compartir en stories. 'Mira cuánto mejoré' es marketing orgánico que no cuesta nada.",
-    rightList: [
-      'Las celebraciones de hitos desbloquean tarjetas compartibles',
-      '"100% en clave de son 3-2" — momento de orgullo para compartir',
-      'Referido integrado: gana 1 mes gratis por cada invitación',
-      'La salsa es intensamente social — esto multiplica'
-    ],
-    rightNote: 'Los comentarios en tu YouTube se convertirán en un canal de reclutamiento — usuarios que traen a sus amigos bailadores. Composición pura.'
-  },
-  settings: {
-    leftTitle: 'Bilingüe <em>por defecto</em>',
-    leftBody: "La mayoría de apps musicales se lanzan primero en inglés y traducen después. Los aprendices de salsa hispanohablantes están masivamente desatendidos — esto se construye ES/EN desde el día uno.",
-    leftList: [
-      'UI completa en español — no solo strings traducidos',
-      'Voz en español cubano (no latinoamericano genérico)',
-      'Lecciones grabadas en los dos idiomas',
-      'El fundador Pablo es cubano + tú también'
-    ],
-    leftNote: 'Esto no es solo una feature. Es un moat de posicionamiento. Ninguna app de música hecha en EE.UU. tiene español cubano auténtico desde el día uno.',
-    rightTitle: 'Modelo de precio <em>aquí</em>',
-    rightBody: "Founding member (de por vida) mostrado — ese es el precio de la fase de validación. Post-lanzamiento: $5/mes o $39/año. El piso es alto suficiente para filtrar usuarios comprometidos.",
-    rightList: [
-      '$5/mes / $39/año precio normal',
-      '$19 founding member de por vida (fase de validación)',
-      'Tier B2B: $40–80/mes por escuela de baile',
-      'Tier gratis: solo Módulo 1 — el gancho',
-      'Invita a un amigo = 1 mes gratis para los dos'
-    ],
-    rightNote: 'Licencia para escuelas (tú enseñas → la escuela licencia ClaveLab) podría 2–3x los ingresos sin 2–3x el trabajo.'
+  en:{
+    tagline:'Learn to read construction drawings',
+    heroTitle:'From laborer to foreman',
+    heroSub:'Master the drawings you see on site every day. 5 minutes a day.',
+    statStreak:'day streak', statSymbols:'symbols mastered', statModules:'modules',
+    modulesLabel:'Course modules',
+    m1t:'Basic symbols', m1s:'Doors, windows, walls, cuts and dimensions',
+    m2t:'Cuts & sections', m2s:'How to read an A-A section and an elevation',
+    m3t:'Dimensions & scales', m3s:'Real measurements from the drawing',
+    m4t:'Electrical plan', m4s:'Outlets, switches and circuits',
+    m5t:'Foundation & structure', m5s:'Footings, columns, beams and rebar',
+    continue:'CONTINUE ›',
+    tapTag:'Tap on the plan', mcTag:'Multiple choice',
+    planHint:'Tap directly on the drawing',
+    correct:'✓ Correct', incorrect:'✗ Almost — look here',
+    next:'Next', finish:'See results',
+    stamp:'Lesson passed', retry:'Repeat lesson', backHome:'Back to modules',
+    resGood:'You read like a foreman!', resMid:'Good progress, keep going', resLow:'Repeat it and you\'ll master it',
+    resSub:'Basic symbols · Lesson 2 of 5'
   }
 };
-
-function renderNotes(key){
-  const n = NOTES[key];
-  if(!n) return;
-  document.getElementById('leftTitle').innerHTML = n.leftTitle;
-  document.getElementById('leftBody').textContent = n.leftBody;
-  document.getElementById('leftList').innerHTML = n.leftList.map(s => `<li>${s}</li>`).join('');
-  document.getElementById('leftNote').textContent = n.leftNote;
-  document.getElementById('rightTitle').innerHTML = n.rightTitle;
-  document.getElementById('rightBody').textContent = n.rightBody;
-  document.getElementById('rightList').innerHTML = n.rightList.map(s => `<li>${s}</li>`).join('');
-  document.getElementById('rightNote').textContent = n.rightNote;
+function t(k){return STR[lang][k]}
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n'); if(STR[lang][k]) el.textContent=STR[lang][k];
+  });
+  document.getElementById('langBtn').textContent = lang==='es' ? 'EN' : 'ES';
+  document.documentElement.lang = lang;
 }
-
-function showScreen(key){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const s = document.querySelector(`.screen[data-screen="${key}"]`);
-  if(s) s.classList.add('active');
-
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const n = document.querySelector(`.nav-item[data-nav="${key}"]`);
-  if(n) n.classList.add('active');
-
-  document.querySelectorAll('.si-btn').forEach(b => b.classList.remove('active'));
-  const sb = document.querySelector(`.si-btn[data-si="${key}"]`);
-  if(sb) sb.classList.add('active');
-
-  renderNotes(key);
-
-  // Stop any practice audio when leaving practice screen
-  if(key !== 'practice') stopPractice();
-}
-
-/* ============================================================
-   CLAVE PATTERN VISUALIZATION
-   ============================================================ */
-
-const SON_32 = [1,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0];
-const visEl = document.getElementById('claveVis');
-for(let i = 0; i < 16; i++){
-  const c = document.createElement('div');
-  c.className = 'cv-cell';
-  if(SON_32[i]) c.classList.add('hit');
-  c.dataset.step = i;
-  visEl.appendChild(c);
-}
-
-/* ============================================================
-   AUDIO (Tone.js) — clave playback + simulated mic grading
-   ============================================================ */
-
-let audioReady = false;
-let claveBus = null;
-let practiceLoop = null;
-let practiceStep = 0;
-let isPlaying = false;
-
-async function initAudio(){
-  if(audioReady) return;
-  try{
-    await Tone.start();
-    claveBus = new Tone.Volume(-3).toDestination();
-    Tone.Transport.bpm.value = 96;
-    audioReady = true;
-  }catch(e){
-    console.error('Audio init failed', e);
-  }
-}
-
-function playClave(time){
-  const o1 = new Tone.Oscillator(2400, 'sine').connect(claveBus);
-  const e1 = new Tone.AmplitudeEnvelope({attack:0.001,decay:0.06,sustain:0,release:0.02}).connect(claveBus);
-  o1.connect(e1);
-  o1.start(time);
-  e1.triggerAttackRelease(0.05, time);
-  o1.stop(time + 0.1);
-  const o2 = new Tone.Oscillator(1100, 'triangle').connect(claveBus);
-  const e2 = new Tone.AmplitudeEnvelope({attack:0.001,decay:0.04,sustain:0,release:0.01}).connect(claveBus);
-  o2.connect(e2);
-  o2.start(time);
-  e2.triggerAttackRelease(0.04, time);
-  o2.stop(time + 0.08);
-}
-
-function startPractice(){
-  if(!audioReady) return;
-  if(isPlaying) return;
-  practiceStep = 0;
-  practiceLoop = Tone.Transport.scheduleRepeat(time => {
-    const step = practiceStep;
-    if(SON_32[step]) playClave(time);
-    Tone.Draw.schedule(() => {
-      visEl.querySelectorAll('.cv-cell').forEach(c => c.classList.remove('now'));
-      const cell = visEl.querySelector(`.cv-cell[data-step="${step}"]`);
-      if(cell) cell.classList.add('now');
-    }, time);
-    practiceStep = (practiceStep + 1) % 16;
-  }, '8n');
-  Tone.Transport.start();
-  isPlaying = true;
-}
-
-function stopPractice(){
-  if(practiceLoop !== null){
-    Tone.Transport.clear(practiceLoop);
-    practiceLoop = null;
-  }
-  Tone.Transport.stop();
-  isPlaying = false;
-  visEl.querySelectorAll('.cv-cell.now').forEach(c => c.classList.remove('now'));
-  // Reset mic UI
-  document.getElementById('micCircle').classList.remove('listening');
-  document.getElementById('micStatus').innerHTML = "Toca el mic para <em>empezar</em>";
-  document.getElementById('micHint').textContent = "Toca, aplaude o golpea el teléfono con los dedos";
-  document.getElementById('gradeTrack').style.display = 'none';
-  document.getElementById('gradeLabels').style.display = 'none';
-  if(gradeAnimInterval){clearInterval(gradeAnimInterval);gradeAnimInterval=null}
-}
-
-/* ============================================================
-   MIC SIMULATION (no actual mic — visual demo of grading)
-   ============================================================ */
-
-let gradeAnimInterval = null;
-
-async function toggleMic(){
-  await initAudio();
-  const circle = document.getElementById('micCircle');
-  const status = document.getElementById('micStatus');
-  const hint = document.getElementById('micHint');
-  const track = document.getElementById('gradeTrack');
-  const labels = document.getElementById('gradeLabels');
-
-  if(isPlaying){
-    stopPractice();
-    return;
-  }
-
-  circle.classList.add('listening');
-  status.innerHTML = "Listening · <em>tap along</em>";
-  hint.textContent = "Clap or tap your phone to the rhythm";
-  track.style.display = 'block';
-  labels.style.display = 'flex';
-
-  startPractice();
-
-  // Animate grade marker to simulate live tap feedback
-  const marker = document.getElementById('gradeMarker');
-  gradeAnimInterval = setInterval(() => {
-    // Simulate taps clustering around "on time" (50%) with some variance
-    const pos = 50 + (Math.random() * 30 - 15);
-    marker.style.left = `${pos}%`;
-  }, 380);
-}
-
-/* ============================================================
-   CELEBRATE & LESSON PROGRESSION
-   ============================================================ */
-
-function completeLesson(){
-  stopPractice();
-  document.getElementById('celebrate').classList.add('show');
-  // Bump progress bar
-  document.getElementById('lessonProgFill').style.width = '60%';
-}
-
-function closeCelebrate(){
-  document.getElementById('celebrate').classList.remove('show');
-  showScreen('progress');
-}
-
-/* ============================================================
-   AUDIO START GATE
-   ============================================================ */
-
-document.getElementById('audioStart').addEventListener('click', async () => {
-  await initAudio();
-  document.getElementById('audioPrompt').classList.add('hidden');
+document.getElementById('langBtn').addEventListener('click',()=>{
+  lang = lang==='es' ? 'en' : 'es';
+  applyI18n();
+  if(document.getElementById('lesson').classList.contains('active')) renderQuestion(false);
 });
 
-/* ============================================================
-   BOOT
-   ============================================================ */
+/* =============== blueprint SVG =============== */
+/* white-line floor plan on blueprint blue, with id'd hotspots */
+function planSVG(){
+  return `
+  <svg viewBox="0 0 720 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Floor plan">
+    <defs>
+      <pattern id="bgrid" width="24" height="24" patternUnits="userSpaceOnUse">
+        <path d="M24 0H0V24" fill="none" stroke="#DDE9FB" stroke-width="0.5" opacity="0.12"/>
+      </pattern>
+    </defs>
+    <rect width="720" height="470" fill="#16386F"/>
+    <rect width="720" height="470" fill="url(#bgrid)"/>
 
-renderNotes('home');
+    <!-- dimension line (top) -->
+    <g stroke="#8FB2E8" stroke-width="1.2" id="g-dim">
+      <line x1="120" y1="52" x2="600" y2="52"/>
+      <line x1="120" y1="44" x2="120" y2="60"/>
+      <line x1="600" y1="44" x2="600" y2="60"/>
+      <path d="M120 52 l10 -4 v8 Z" fill="#8FB2E8" stroke="none"/>
+      <path d="M600 52 l-10 -4 v8 Z" fill="#8FB2E8" stroke="none"/>
+    </g>
+    <text x="360" y="44" fill="#DDE9FB" font-family="'IBM Plex Mono',monospace" font-size="17" text-anchor="middle">6.40 m</text>
 
+    <!-- outer walls (double line) -->
+    <g stroke="#FFFFFF" stroke-width="2.5" fill="none">
+      <rect x="120" y="90" width="480" height="300"/>
+      <rect x="128" y="98" width="464" height="284"/>
+    </g>
+    <!-- interior wall -->
+    <g stroke="#FFFFFF" stroke-width="2" fill="none">
+      <line x1="380" y1="98" x2="380" y2="240"/>
+      <line x1="388" y1="98" x2="388" y2="240"/>
+      <line x1="380" y1="240" x2="388" y2="240"/>
+    </g>
+
+    <!-- DOOR: opening in bottom wall + quarter-arc swing -->
+    <rect x="240" y="382" width="70" height="10" fill="#16386F"/>
+    <g stroke="#FFFFFF" stroke-width="2" fill="none">
+      <line x1="240" y1="388" x2="240" y2="318"/>
+      <path d="M240 318 A70 70 0 0 1 310 388"/>
+    </g>
+
+    <!-- WINDOW left wall: triple line -->
+    <rect x="116" y="180" width="18" height="80" fill="#16386F"/>
+    <g stroke="#FFFFFF" stroke-width="1.6">
+      <line x1="120" y1="180" x2="120" y2="260"/>
+      <line x1="126" y1="180" x2="126" y2="260"/>
+      <line x1="132" y1="180" x2="132" y2="260"/>
+    </g>
+
+    <!-- WINDOW right wall: triple line -->
+    <rect x="586" y="150" width="18" height="90" fill="#16386F"/>
+    <g stroke="#FFFFFF" stroke-width="1.6">
+      <line x1="588" y1="150" x2="588" y2="240"/>
+      <line x1="594" y1="150" x2="594" y2="240"/>
+      <line x1="600" y1="150" x2="600" y2="240"/>
+    </g>
+
+    <!-- SECTION MARK A-A through plan -->
+    <g id="g-section">
+      <line x1="470" y1="70" x2="470" y2="410" stroke="#FF6B1A" stroke-width="1.6" stroke-dasharray="10 6"/>
+      <circle cx="470" cy="70" r="15" fill="#16386F" stroke="#FF6B1A" stroke-width="2"/>
+      <text x="470" y="75" fill="#FF6B1A" font-family="'IBM Plex Mono',monospace" font-size="13" text-anchor="middle">A</text>
+      <path d="M470 40 L479 55 H461 Z" fill="#FF6B1A"/>
+      <circle cx="470" cy="410" r="15" fill="#16386F" stroke="#FF6B1A" stroke-width="2"/>
+      <text x="470" y="415" fill="#FF6B1A" font-family="'IBM Plex Mono',monospace" font-size="13" text-anchor="middle">A</text>
+      <path d="M470 440 L479 425 H461 Z" fill="#FF6B1A" transform="rotate(180 470 432)"/>
+    </g>
+
+    <!-- room labels -->
+    <text x="250" y="220" fill="#DDE9FB" font-family="'IBM Plex Mono',monospace" font-size="14" text-anchor="middle">SALA</text>
+    <text x="250" y="240" fill="#8FB2E8" font-family="'IBM Plex Mono',monospace" font-size="11" text-anchor="middle">18.2 m²</text>
+    <text x="495" y="300" fill="#DDE9FB" font-family="'IBM Plex Mono',monospace" font-size="14" text-anchor="middle">COCINA</text>
+    <text x="495" y="320" fill="#8FB2E8" font-family="'IBM Plex Mono',monospace" font-size="11" text-anchor="middle">9.6 m²</text>
+
+    <!-- north arrow -->
+    <g transform="translate(660,105)">
+      <circle r="17" fill="none" stroke="#8FB2E8" stroke-width="1.4"/>
+      <path d="M0 -13 L6 8 L0 3 L-6 8 Z" fill="#DDE9FB"/>
+      <text y="30" fill="#8FB2E8" font-family="'IBM Plex Mono',monospace" font-size="10" text-anchor="middle">N</text>
+    </g>
+
+    <!-- title block -->
+    <g id="g-title">
+      <rect x="510" y="420" width="196" height="40" fill="none" stroke="#8FB2E8" stroke-width="1.2"/>
+      <line x1="510" y1="440" x2="706" y2="440" stroke="#8FB2E8" stroke-width="1"/>
+      <text x="608" y="435" fill="#DDE9FB" font-family="'IBM Plex Mono',monospace" font-size="11" text-anchor="middle">PLANTA BAJA</text>
+      <text x="608" y="454" fill="#8FB2E8" font-family="'IBM Plex Mono',monospace" font-size="11" text-anchor="middle">ESC 1:50 · A-01</text>
+    </g>
+
+    <!-- HOTSPOTS (transparent, on top) -->
+    <rect class="hotspot" id="hs-door"    x="225" y="300" width="100" height="105" rx="8" data-hs="door"/>
+    <rect class="hotspot" id="hs-win1"    x="100" y="165" width="50"  height="110" rx="8" data-hs="window"/>
+    <rect class="hotspot" id="hs-win2"    x="570" y="135" width="50"  height="120" rx="8" data-hs="window"/>
+    <rect class="hotspot" id="hs-section" x="440" y="30"  width="60"  height="60"  rx="8" data-hs="section"/>
+    <rect class="hotspot" id="hs-dim"     x="130" y="20"  width="460" height="48"  rx="8" data-hs="dim"/>
+    <rect class="hotspot" id="hs-title"   x="505" y="415" width="205" height="50"  rx="8" data-hs="title"/>
+    <rect class="hotspot" id="hs-wall"    x="370" y="110" width="30"  height="120" rx="8" data-hs="wall"/>
+  </svg>`;
+}
+
+/* mini symbol for MC question (window in plan) */
+function windowSymbolSVG(){
+  return `
+  <svg viewBox="0 0 200 90" width="180" height="82" xmlns="http://www.w3.org/2000/svg" aria-label="Symbol">
+    <rect width="200" height="90" fill="#16386F"/>
+    <g stroke="#FFFFFF" stroke-width="3"><line x1="20" y1="30" x2="70" y2="30"/><line x1="130" y1="30" x2="180" y2="30"/>
+    <line x1="20" y1="60" x2="70" y2="60"/><line x1="130" y1="60" x2="180" y2="60"/></g>
+    <g stroke="#FFFFFF" stroke-width="2"><line x1="70" y1="34" x2="130" y2="34"/><line x1="70" y1="45" x2="130" y2="45"/><line x1="70" y1="56" x2="130" y2="56"/>
+    <line x1="70" y1="30" x2="70" y2="60"/><line x1="130" y1="30" x2="130" y2="60"/></g>
+  </svg>`;
+}
+
+/* =============== questions =============== */
+const QUESTIONS = [
+  { type:'tap', target:'door',
+    q:{es:'Toca la puerta en el plano.', en:'Tap the door on the plan.'},
+    exp:{es:'La puerta se dibuja con un arco de un cuarto de círculo: muestra hacia dónde abre la hoja. El hueco en el muro es el vano.',
+         en:'A door is drawn with a quarter-circle arc: it shows which way the leaf swings. The gap in the wall is the opening.'} },
+  { type:'mc', symbol:true, answer:0,
+    q:{es:'¿Qué representa este símbolo?', en:'What does this symbol represent?'},
+    opts:{es:['Ventana','Puerta corrediza','Viga','Muro de carga'],
+          en:['Window','Sliding door','Beam','Load-bearing wall']},
+    exp:{es:'Tres líneas paralelas dentro del muro = ventana en planta. Las líneas representan el marco y el vidrio.',
+         en:'Three parallel lines inside the wall = a window in plan view. The lines represent the frame and the glass.'} },
+  { type:'tap', target:'section',
+    q:{es:'¿Dónde está la marca de corte A-A?', en:'Where is the A-A section mark?'},
+    exp:{es:'El círculo con la letra A y la línea discontinua marcan por dónde se “corta” el edificio. Ese corte se dibuja en otra hoja como sección A-A.',
+         en:'The circle with the letter A and the dashed line mark where the building is “cut”. That cut is drawn on another sheet as section A-A.'} },
+  { type:'mc', answer:0,
+    q:{es:'El plano dice ESC 1:50. Entonces 1 cm en el papel equivale a…', en:'The sheet says SCALE 1:50. So 1 cm on paper equals…'},
+    opts:{es:['50 cm reales','5 cm reales','1.5 m reales','50 m reales'],
+          en:['50 cm in real life','5 cm in real life','1.5 m in real life','50 m in real life']},
+    exp:{es:'En escala 1:50, todo lo real es 50 veces más grande que en el papel. 1 cm × 50 = 50 cm. La escala siempre está en el cuadro de títulos.',
+         en:'At 1:50 scale, everything real is 50 times bigger than on paper. 1 cm × 50 = 50 cm. The scale is always in the title block.'} },
+  { type:'tap', target:'dim',
+    q:{es:'Toca la cota que indica el ancho total de la casa.', en:'Tap the dimension that shows the total width of the house.'},
+    exp:{es:'La línea con flechas en las puntas es la cota: aquí dice 6.40 m de muro a muro. Las cotas mandan sobre la medida a escala.',
+         en:'The line with arrows at both ends is the dimension line: here it reads 6.40 m wall to wall. Written dimensions always override scaled measurements.'} }
+];
+
+/* =============== state & flow =============== */
+let qIndex = 0, score = 0, answered = false, results = [];
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('main').scrollTop = 0;
+}
+function goHome(){ show('home'); }
+function startLesson(){
+  qIndex = 0; score = 0; results = [];
+  show('lesson');
+  renderQuestion(true);
+}
+
+function renderDots(){
+  const d = document.getElementById('dots'); d.innerHTML='';
+  QUESTIONS.forEach((_,i)=>{
+    const el = document.createElement('div'); el.className='dot';
+    if(results[i]===true) el.classList.add('done');
+    else if(results[i]===false) el.classList.add('wrong');
+    else if(i===qIndex) el.classList.add('now');
+    d.appendChild(el);
+  });
+  document.getElementById('qCount').textContent = (qIndex+1)+'/'+QUESTIONS.length;
+}
+
+function renderQuestion(reset){
+  if(reset!==false) answered = false;
+  const q = QUESTIONS[qIndex];
+  renderDots();
+  document.getElementById('qTag').textContent = q.type==='tap' ? t('tapTag') : t('mcTag');
+  document.getElementById('qText').textContent = q.q[lang];
+  const body = document.getElementById('qBody');
+  const fb = document.getElementById('feedback');
+  if(!answered){ fb.className='feedback'; }
+
+  if(q.type==='tap'){
+    body.innerHTML = `<div class="plan-wrap" id="planWrap">${planSVG()}</div>
+                      <div class="plan-hint">${t('planHint')}</div>`;
+    body.querySelectorAll('.hotspot').forEach(hs=>{
+      hs.addEventListener('click',()=>onTap(hs,q));
+    });
+  } else {
+    let html = '';
+    if(q.symbol) html += `<div class="symbol-preview">${windowSymbolSVG()}</div>`;
+    html += `<div class="choices">` + q.opts[lang].map((o,i)=>
+      `<button class="choice" data-i="${i}"><span class="key">${String.fromCharCode(65+i)}</span>${o}</button>`
+    ).join('') + `</div>`;
+    body.innerHTML = html;
+    body.querySelectorAll('.choice').forEach(btn=>{
+      btn.addEventListener('click',()=>onChoice(btn,q));
+    });
+  }
+}
+
+function onTap(hs,q){
+  if(answered) return;
+  const ok = hs.dataset.hs === q.target;
+  if(ok){
+    answered = true;
+    hs.classList.add('correct-flash');
+    finishAnswer(true,q);
+  } else {
+    hs.classList.add('wrong-flash');
+    const wrap = document.getElementById('planWrap');
+    wrap.classList.remove('shake'); void wrap.offsetWidth; wrap.classList.add('shake');
+    setTimeout(()=>hs.classList.remove('wrong-flash'),450);
+    if(!results.hasOwnProperty(qIndex)) { /* first wrong tap marks it */ }
+    // one wrong tap = question counts as missed, but let them find it
+    if(results[qIndex]===undefined){ results[qIndex]=false; renderDots(); }
+  }
+}
+function onChoice(btn,q){
+  if(answered) return;
+  answered = true;
+  const i = +btn.dataset.i;
+  const ok = i===q.answer;
+  btn.classList.add(ok?'correct':'wrong');
+  const all = btn.parentElement.querySelectorAll('.choice');
+  all.forEach(b=>{ b.disabled=true; if(+b.dataset.i===q.answer) b.classList.add('correct'); });
+  finishAnswer(ok,q);
+}
+function finishAnswer(ok,q){
+  if(results[qIndex]===undefined) results[qIndex]=ok;
+  if(results[qIndex]) score = results.filter(r=>r===true).length;
+  score = results.filter(r=>r===true).length;
+  renderDots();
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (results[qIndex] ? 'good':'bad');
+  document.getElementById('fbTitle').textContent = results[qIndex] ? t('correct') : t('incorrect');
+  document.getElementById('fbText').textContent = q.exp[lang];
+  document.getElementById('nextBtn').textContent = (qIndex===QUESTIONS.length-1) ? t('finish') : t('next');
+}
+function nextQuestion(){
+  if(qIndex === QUESTIONS.length-1){ showResults(); return; }
+  qIndex++;
+  renderQuestion(true);
+}
+function showResults(){
+  show('results');
+  document.getElementById('scoreNum').textContent = score;
+  const title = score>=5 ? t('resGood') : score>=3 ? t('resMid') : t('resLow');
+  document.getElementById('resTitle').textContent = title;
+  document.getElementById('resSub').textContent = t('resSub');
+}
+
+applyI18n();
 </script>
 </body>
 </html>
